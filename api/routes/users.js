@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
+const checkAuth = require('../middleware/check-auth');
 
 router.post('/s', (req, res) => {
     const email = req.body.email;
@@ -69,8 +71,17 @@ router.post('/', (req, res, next) => {
                     message: 'Invalid login'
                 });
             }
-            return res.status(201).json({
-                message: 'User login',
+            const token = jwt.sign({
+                email: user.email,
+                id: user._id,
+            },
+            "a secret key",
+            {
+                expiresIn: "1h",
+            });
+            return res.status(200).json({
+                message: 'Auth successful',
+                token: token,
                 user: {
                     username: user.email
                 }
@@ -84,5 +95,9 @@ router.post('/', (req, res, next) => {
         });
     });
 });
+
+router.get('/profile', checkAuth, (req, res) => {
+    return res.send(req.userData);
+})
 
 module.exports = router;

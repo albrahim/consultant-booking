@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const checkAuth = require('../middleware/check-auth');
 
-router.post('/s', (req, res) => {
+router.post('/signup', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
@@ -55,7 +55,7 @@ router.post('/s', (req, res) => {
         });
 });
 
-router.post('/', (req, res, next) => {
+router.post('/login', (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     User.find({email: email})
@@ -97,7 +97,17 @@ router.post('/', (req, res, next) => {
 });
 
 router.get('/profile', checkAuth, (req, res) => {
-    return res.send(req.userData);
+    User.find({_id: req.userData.id})
+        .exec()
+        .then(users => {
+            const user = users[0];
+            return res.status(200).json({email: user.email, hash: user.password});
+        })
+        .catch(error => {
+            return res.status(500).json({
+                message: 'Error'
+            });
+        });
 })
 
 module.exports = router;

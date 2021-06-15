@@ -13,6 +13,7 @@ app.use(express.urlencoded({
 
 
 const userRouter = require('./api/routes/users');
+const userIdRouter = require('./api/routes/user-ids');
 const profileRouter = require('./api/routes/profiles');
 
 app.use((req, res, next) => {
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/user', userRouter);
+app.use('/user/id', userIdRouter);
 app.use('/profile', profileRouter);
 
 app.use((req, res, next) => {

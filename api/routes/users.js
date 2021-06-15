@@ -31,6 +31,8 @@ router.post('/signup', (req, res) => {
                         _id: new mongoose.Types.ObjectId(),
                         email: email,
                         password: hash,
+                        signupAt: new Date(),
+                        lastLoginAt: new Date()
                     });
                     user
                     .save()
@@ -38,8 +40,10 @@ router.post('/signup', (req, res) => {
                         res.status(200).json({
                             message: 'User created',
                             user: {
-                                email: email,
+                                email: user.email,
                                 password: password,
+                                signupAt: user.signupAt,
+                                lastLoginAt: user.lastLoginAt,
                             }
                         });
                     })
@@ -70,20 +74,30 @@ router.post('/login', (req, res, next) => {
                     message: 'Invalid login'
                 });
             }
-            const token = jwt.sign({
-                email: user.email,
-                id: user._id,
-            },
-            "a secret key",
-            {
-                expiresIn: "1h",
-            });
-            return res.status(200).json({
-                message: 'Auth successful',
-                token: token,
-                user: {
-                    email: user.email
-                }
+
+            user.lastLoginAt = new Date();
+            user.save().then(result => {
+                const token = jwt.sign({
+                    email: user.email,
+                    id: user._id,
+                },
+                "a secret key",
+                {
+                    expiresIn: "1h",
+                });
+
+                return res.status(200).json({
+                    message: 'Auth successful',
+                    token: token,
+                    user: {
+                        email: user.email,
+                        signupAt: user.signupAt,
+                        lastLoginAt: user.lastLoginAt,
+                    }
+                });
+            })
+            .catch(error => {
+                res.status(500).json(error)
             });
         });
         

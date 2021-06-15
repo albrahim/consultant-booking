@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const user = require('../models/user');
 
 module.exports = (req, res, next) => {
     try {

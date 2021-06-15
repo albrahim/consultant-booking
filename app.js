@@ -13,6 +13,7 @@ app.use(express.urlencoded({
 
 
 const userRouter = require('./api/routes/users');
+const profileRouter = require('./api/routes/profiles');
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/user', userRouter);
+app.use('/profile', profileRouter);
 
 app.use((req, res, next) => {
     const error = new Error("Not Found");

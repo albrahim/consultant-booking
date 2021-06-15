@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 router.post('/signup', (req, res) => {
-    const email = req.body.email;
+    const email = (req.body.email ? req.body.email.toLowerCase() : "");
     const password = req.body.password;
 
     User.find({email: email})
@@ -55,7 +55,7 @@ router.post('/signup', (req, res) => {
 });
 
 router.post('/login', (req, res, next) => {
-    const email = req.body.email;
+    const email = (req.body.email ? req.body.email.toLowerCase() : "");
     const password = req.body.password;
     User.find({email: email})
     .exec()
@@ -82,7 +82,7 @@ router.post('/login', (req, res, next) => {
                 message: 'Auth successful',
                 token: token,
                 user: {
-                    username: user.email
+                    email: user.email
                 }
             });
         });

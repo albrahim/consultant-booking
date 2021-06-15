@@ -7,7 +7,10 @@ const profileSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    gender: String,
+    gender: {
+        type: String,
+        enum: ['male', 'female'],
+    },
     major: String,
 })
 

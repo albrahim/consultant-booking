@@ -14,6 +14,12 @@ const userSchema = mongoose.Schema({
     },
     signupAt: Date,
     lastLoginAt: Date,
-})
+});
+
+userSchema.pre('remove', function(next) {
+    console.log('will remove user');
+    this.model('Profile').findOneAndRemove({user: this._id}).exec().catch(error => {});
+    next();
+});
 
 module.exports = mongoose.model('User', userSchema);

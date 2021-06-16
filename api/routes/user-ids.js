@@ -67,4 +67,20 @@ router.patch('/', checkAuth, (req, res) => {
     });
 });
 
+router.delete('/', checkAuth, (req, res) => {
+    User.findOne({_id: req.userData.id})
+    .exec()
+    .then(user => {
+        user.remove();
+        return res.status(200).json({
+            message: 'Deleted successfully'
+        });
+    })
+    .catch( error => {
+        console.log(error);
+        res.status(500).json({
+            error: error
+        });
+    });
+});
 module.exports = router;

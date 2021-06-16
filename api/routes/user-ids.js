@@ -14,36 +14,57 @@ router.get('/', checkAuth, (req, res) => {
             email: user.email,
             signupAt: user.signupAt,
             lastLoginAt: user.lastLoginAt,
+        });
+    })
+    .catch(error => {
+        console.log(error);
+        return res.status(500).json({
+            error: error
         })
     });
 });
 
 router.patch('/', checkAuth, (req, res) => {
+    console.log('patch request for id: ' + req.userData.id);
     User.findOne({_id: req.userData.id})
     .exec()
-    .then(user => {
+    .then(async user => {
         if (req.body.email) {
-            user.email = req.body.email.toLowerString();
-            user.save()
+            console.log('provided email: ' + req.body.email.toLowerCase());
+            user.email = req.body.email.toLowerCase();
         }
         if (req.body.password) {
-            bcrypt.hash(req.body.password, 10, (error, hash) => {
-                if (error) {
-                    return res.status(500).json(error);
-                }
-                console.log(hash);
-                user.password = hash;
-                user.save();
-            });
+            console.log('provided password: ' + req.body.password);
+            const hash = await bcrypt.hash(req.body.password, 10);
+            if (!hash) {
+                console.log('bcrypt error');
+                return res.status(500).json({
+                    error: 'error'
+                });
+            }
+            console.log('hash in bycrypt callback: ' + hash);
+            user.password = hash;
         }
+        console.log('hash after bycrypt callback ' + user.password);
+        user.save()
+        .catch(error => {
+            console.log(error);
+            return res.status(500).json({
+                error: error
+            });
+        });
+        console.log('id patch request success')
         return res.status(200).json({
+            
             message: "Login information updated"
         });
     })
     .catch(error => {
-        return res.status(500).json(error); 
+        console.log(error);
+        return res.status(500).json({
+            error: error
+        }); 
     });
-    
 });
 
 module.exports = router;

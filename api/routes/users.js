@@ -70,7 +70,7 @@ router.post('/login', (req, res, next) => {
                 return res.status(500).json(err);
             }
             if (result == false) {
-                return res.status(500).json({
+                return res.status(401).json({
                     message: 'Invalid login'
                 });
             }
@@ -78,8 +78,7 @@ router.post('/login', (req, res, next) => {
             user.lastLoginAt = new Date();
             user.save().then(result => {
                 const token = jwt.sign({
-                    email: user.email,
-                    id: user._id,
+                    id: user._id
                 },
                 "a secret key",
                 {
@@ -103,7 +102,7 @@ router.post('/login', (req, res, next) => {
         
     })
     .catch( result => {
-        return res.status(500).json({
+        return res.status(401).json({
             message: 'Invalid login'
         });
     });

@@ -15,6 +15,7 @@ router.put('/', checkAuth, (req, res) => {
             if (profiles.length == 0) {
                 let profile = new Profile({
                     user: req.userData.id,
+                    fullName: req.body.fullName,
                     gender: req.body.gender,
                     major: req.body.major,
                 })
@@ -32,6 +33,7 @@ router.put('/', checkAuth, (req, res) => {
                 let profile = profiles[0];
                 profile.overwrite({
                     user: profile.user,
+                    fullName: req.body.fullName,
                     gender: req.body.gender,
                     major: req.body.major,
                 })
@@ -75,7 +77,11 @@ router.get('/', checkAuth, (req, res) => {
                 })
             } else {
                 const profile = profiles[0];
-                return res.status(200).json({gender: profile.gender, major: profile.major});
+                return res.status(200).json({
+                    fullName: profile.fullName,
+                    gender: profile.gender,
+                    major: profile.major
+                });
             }
             
         })

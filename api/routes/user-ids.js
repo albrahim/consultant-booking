@@ -12,6 +12,7 @@ router.get('/', checkAuth, (req, res) => {
     .then(user => {
         return res.status(200).json({
             email: user.email,
+            id: user._id,
             signupAt: user.signupAt,
             lastLoginAt: user.lastLoginAt,
         });

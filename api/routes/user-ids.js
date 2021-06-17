@@ -40,6 +40,11 @@ router.patch('/', checkAuth, async (req, res) => {
     }
     
     // update password
+    if (req.body.password === "") {
+        return res.status(500).json({
+            message: "Password cannot be empty"
+        });
+    }
     if (req.body.password) {
         console.log('provided password: ' + req.body.password);
         const hash = await bcrypt.hash(req.body.password, 10);

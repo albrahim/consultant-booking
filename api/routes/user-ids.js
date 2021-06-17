@@ -30,6 +30,12 @@ router.patch('/', checkAuth, async (req, res) => {
     let updatedFields = {};
 
     if (req.body.email) {
+        const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+        if (!emailRegex.test(req.body.email.toLowerCase())) {
+            return res.status(500).json({
+                message: "Invalid email"
+            })
+        }
         updatedFields.email = req.body.email.toLowerCase();
     }
     

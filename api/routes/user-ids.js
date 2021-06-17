@@ -20,50 +20,42 @@ router.get('/', checkAuth, (req, res) => {
         console.log(error);
         return res.status(500).json({
             error: error
-        })
+        });
     });
 });
 
-router.patch('/', checkAuth, (req, res) => {
+router.patch('/', checkAuth, async (req, res) => {
     console.log('patch request for id: ' + req.userData.id);
-    User.findOne({_id: req.userData.id})
-    .exec()
-    .then(async user => {
-        if (req.body.email) {
-            console.log('provided email: ' + req.body.email.toLowerCase());
-            user.email = req.body.email.toLowerCase();
-        }
-        if (req.body.password) {
-            console.log('provided password: ' + req.body.password);
-            const hash = await bcrypt.hash(req.body.password, 10);
-            if (!hash) {
-                console.log('bcrypt error');
-                return res.status(500).json({
-                    error: 'error'
-                });
-            }
-            console.log('hash in bycrypt callback: ' + hash);
-            user.password = hash;
-        }
-        console.log('hash after bycrypt callback ' + user.password);
-        user.save()
-        .catch(error => {
-            console.log(error);
+    let updatedFields = {};
+
+    if (req.body.email) {
+        updatedFields.email = req.body.email.toLowerCase();
+    }
+    
+    // update password
+    if (req.body.password) {
+        console.log('provided password: ' + req.body.password);
+        const hash = await bcrypt.hash(req.body.password, 10);
+        if (!hash) {
+            console.log('bcrypt error');
             return res.status(500).json({
-                error: error
+                error: 'error'
             });
-        });
-        console.log('id patch request success')
+        }
+        console.log('bycrypt hash: ' + hash);
+        updatedFields.password = hash;
+    }
+    User.findByIdAndUpdate(req.userData.id, updatedFields, function(error, result) {
+        if (error) {
+            console.log(error);
+            if (error.codeName === "DuplicateKey") {
+                return res.status(500).json({error: "Email already in use by another user"})
+            }
+            return res.status(500).json({error: error});
+        }
         return res.status(200).json({
-            
-            message: "Login information updated"
+            message: "Updated successfully",
         });
-    })
-    .catch(error => {
-        console.log(error);
-        return res.status(500).json({
-            error: error
-        }); 
     });
 });
 

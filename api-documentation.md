@@ -1,6 +1,6 @@
 ## User signup:
-### endpoint: /user/signup
-### method: POST
+#### endpoint: /user/signup
+#### method: POST
 ### request:
 ```
 {
@@ -9,8 +9,8 @@
 }
 ```
 
-response:
-if user signup successfully:
+### response:
+#### if user signup successfully:
 {
     "message": "User created",
     "user": {
@@ -21,24 +21,24 @@ if user signup successfully:
     }
 }
 
-if email already exists:
+#### if email already exists:
 ```
 {
     "message": "Email already exists"
 }
 ```
 
-if password not provided:
+#### if password not provided:
 ```
 {
     "message": "Password cannot be empty"
 }
 ```
 
-User login:
-endpoint: /user/login
-method: POST
-request:
+## User login:
+#### endpoint: /user/login
+#### method: POST
+### request:
 ```
 {
     "email": <email>,
@@ -46,8 +46,8 @@ request:
 }
 ```
 
-response:
-if login successful:
+### response:
+#### if login successful:
 ```
 {
     "message": "Auth successful",
@@ -60,20 +60,20 @@ if login successful:
 }
 ```
 
-if wrong password or email:
+#### if wrong password or email:
 ```
 {
     "message": "Invalid login"
 }
 ```
 
-User profile information:
-endpoint: /profile
-method: GET
-header: Authorization: <token>
+## User profile information:
+#### endpoint: /profile
+#### method: GET
+#### header: Authorization: <token>
 
-response:
-if logged in:
+### response:
+#### if logged in:
 ```
 {
     "fullName": <fullName optional>,
@@ -82,19 +82,19 @@ if logged in:
 }
 ```
 
-if not logged in:
+#### if not logged in:
 ```
 {
     "message": "Auth failed"
 }
 ```
 
-Change user profile information:
-endpoint: /profile
-method: PUT
-header: Authorization: <token>
+## Change user profile information:
+#### endpoint: /profile
+#### method: PUT
+#### header: Authorization: <token>
 
-request:
+### request:
 ```
 {
     "fullName": <fullName optional>,
@@ -103,15 +103,15 @@ request:
 }
 ```
 
-response:
-if changed successfully:
+### response:
+#### if changed successfully:
 ```
 {
     "message": "Profile Updated"
 }
 ```
 
-if wrong gender value provided:
+#### if wrong gender value provided:
 ```
 {
     "errors": {
@@ -139,19 +139,19 @@ if wrong gender value provided:
 }
 ```
 
-if not logged in:
+#### if not logged in:
 ```
 {
     "message": "Auth failed"
 }
 ```
 
-Login information:
-endpoint: /user/id
-method: GET
-header: Authorization: <token>
+## Login information:
+#### endpoint: /user/id
+#### method: GET
+#### header: Authorization: <token>
 
-response:
+### response:
 ```
 {
     "email": <email>,
@@ -161,19 +161,19 @@ response:
 }
 ```
 
-if not logged in:
+#### if not logged in:
 ```
 {
     "message": "Auth failed"
 }
 ```
 
-Change login information:
-endpoint: /user/id
-method: PATCH
-header: Authorization: <token>
+## Change login information:
+#### endpoint: /user/id
+#### method: PATCH
+#### header: Authorization: <token>
 
-request:
+### request:
 ```
 {
     "email": <email optional>,
@@ -181,37 +181,37 @@ request:
 }
 ```
 
-response:
+### response:
 
-changed successfully:
+#### changed successfully:
 ```
 {
     "message": "Updated successfully"
 }
 ```
 
-invalid email provided:
+#### invalid email provided:
 ```
 {
     "message": "Invalid email"
 }
 ```
 
-empty password provided:
+#### empty password provided:
 ```
 {
     "message": "Password cannot be empty"
 }
 ```
 
-provided email used by another user:
+#### provided email used by another user:
 ```
 {
     "error": "Email already in use by another user"
 }
 ```
 
-if not logged in:
+#### if not logged in:
 ```
 {
     "message": "Auth failed"
@@ -219,32 +219,32 @@ if not logged in:
 ```
 
 
-Delete user's account:
-endpoint: /user/id
-method: DELETE
-header: Authorization: <token>
+## Delete user's account:
+#### endpoint: /user/id
+#### method: DELETE
+#### header: Authorization: <token>
 
-response:
+### response:
 ```
 {
     "message": "Deleted successfully"
 }
 ```
 
-if not logged in:
+#### if not logged in:
 ```
 {
     "message": "Auth failed"
 }
 ```
 
-Another user profile information:
-endpoint: /profile/<another user's id>
-method: GET
-header: Authorization: <token>
+## Another user profile information:
+#### endpoint: /profile/<another user's id>
+#### method: GET
+#### header: Authorization: <token>
 
-response:
-if user exists:
+### response:
+#### if user exists:
 ```
 {
     "fullName": <fullName optional>,
@@ -253,14 +253,14 @@ if user exists:
 }
 ```
 
-if user doesn't exist:
+#### if user doesn't exist:
 ```
 {
     "message": "User doesn't exist"
 }
 ```
 
-if not logged in:
+#### if not logged in:
 ```
 {
     "message": "Auth failed"

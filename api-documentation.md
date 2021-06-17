@@ -1,11 +1,13 @@
-User signup:
-endpoint: /user/signup
-method: POST
-request:
+## User signup:
+### endpoint: /user/signup
+### method: POST
+### request:
+```
 {
     "email": <email>,
     "password": <password>
 }
+```
 
 response:
 if user signup successfully:

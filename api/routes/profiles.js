@@ -92,4 +92,19 @@ router.get('/', checkAuth, (req, res) => {
         });
 })
 
+router.get('/:userid', checkAuth, (req, res) => {
+    Profile.findOne({user: req.params.userid}, function(error, result) {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({error: error});
+        }
+        console.log(result);
+        res.status(200).json({
+            fullName: result.fullName,
+            gender: result.gender,
+            major: result.major,
+        });
+    });
+});
+
 module.exports = router;

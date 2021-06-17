@@ -93,12 +93,26 @@ router.get('/', checkAuth, (req, res) => {
 })
 
 router.get('/:userid', checkAuth, (req, res) => {
-    Profile.findOne({user: req.params.userid}, function(error, result) {
+    User.findById(req.params.userid, function(error, result) {
         if (error) {
             console.log(error);
             return res.status(500).json({error: error});
         }
-        console.log(result);
+        if (result == null) {
+            return res.status(404).json({
+                message: "User doesn't exist"
+            });
+        }
+    });
+    Profile.findOne({user: req.params.userid}, function(error, result) {
+        console.log('result ' + result);
+        if (error) {
+            console.log(error);
+            return res.status(500).json({error: error});
+        }
+        if (result == null) {
+            return res.status(200).json({});
+        }
         res.status(200).json({
             fullName: result.fullName,
             gender: result.gender,

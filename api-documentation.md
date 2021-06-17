@@ -14,8 +14,8 @@ if user signup successfully:
     "user": {
         "email": <email>,
         "password": <password>,
-        "signupAt": "2021-06-17T08:24:28.523Z",
-        "lastLoginAt": "2021-06-17T08:24:28.523Z"
+        "signupAt": <date>,
+        "lastLoginAt": <date>
     }
 }
 
@@ -45,8 +45,8 @@ if login successful:
     "token": <login token>,
     "user": {
         "email": <email>,
-        "signupAt": "2021-06-17T08:06:58.275Z",
-        "lastLoginAt": "2021-06-17T08:26:49.513Z"
+        "signupAt": <date>,
+        "lastLoginAt": <date>
     }
 }
 
@@ -134,6 +134,11 @@ response:
     "lastLoginAt": <date>
 }
 
+if not logged in:
+{
+    "message": "Auth failed"
+}
+
 Change login information:
 endpoint: /user/id
 method: PATCH
@@ -157,7 +162,56 @@ invalid email provided:
     "message": "Invalid email"
 }
 
+empty password provided:
+{
+    "message": "Password cannot be empty"
+}
+
 provided email used by another user:
 {
     "error": "Email already in use by another user"
+}
+
+if not logged in:
+{
+    "message": "Auth failed"
+}
+
+
+Delete user's account:
+endpoint: /user/id
+method: DELETE
+header: Authorization: <token>
+
+response:
+{
+    "message": "Deleted successfully"
+}
+
+if not logged in:
+{
+    "message": "Auth failed"
+}
+
+Another user profile information:
+endpoint: /profile/<another user's id>
+method: GET
+header: Authorization: <token>
+
+response:
+if user exists:
+{
+    "fullName": <fullName optional>,
+    "gender": <gender either "male" or "female" optional>,
+    "major": <major optional>
+}
+
+if user doesn't exist:
+{
+    "message": "User doesn't exist"
+}
+
+if not logged in:
+{
+    "message": "Auth failed"
 }

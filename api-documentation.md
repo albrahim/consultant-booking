@@ -146,6 +146,18 @@ request:
 }
 
 response:
+
+changed successfully:
 {
     "message": "Updated successfully"
+}
+
+invalid email provided:
+{
+    "message": "Invalid email"
+}
+
+provided email used by another user:
+{
+    "error": "Email already in use by another user"
 }

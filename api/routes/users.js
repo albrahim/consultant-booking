@@ -30,7 +30,7 @@ router.post('/signup', (req, res) => {
                     const user = new User({
                         _id: new mongoose.Types.ObjectId(),
                         email: email,
-                        password: hash,
+                        hash: hash,
                         signupAt: new Date(),
                         lastLoginAt: new Date()
                     });
@@ -65,7 +65,7 @@ router.post('/login', (req, res, next) => {
     .exec()
     .then( users => {
         const user = users[0];
-        bcrypt.compare(password, user.password, (err, result) => {
+        bcrypt.compare(password, user.hash, (err, result) => {
             if (err) {
                 return res.status(500).json(err);
             }

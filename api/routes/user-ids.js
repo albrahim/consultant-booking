@@ -44,7 +44,7 @@ router.patch('/', checkAuth, async (req, res) => {
             });
         }
         console.log('bycrypt hash: ' + hash);
-        updatedFields.password = hash;
+        updatedFields.hash = hash;
     }
     User.findByIdAndUpdate(req.userData.id, updatedFields, function(error, result) {
         if (error) {

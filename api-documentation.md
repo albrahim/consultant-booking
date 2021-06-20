@@ -11,6 +11,7 @@
 
 ### response:
 #### if user signup successfully:
+```
 {
     "message": "User created",
     "user": {
@@ -20,6 +21,7 @@
         "lastLoginAt": <date>
     }
 }
+```
 
 #### if email already exists:
 ```

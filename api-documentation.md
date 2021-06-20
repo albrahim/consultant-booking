@@ -38,8 +38,8 @@
 ```
 
 ## User login:
-#### endpoint: /user/login
-#### method: POST
+* endpoint: /user/login
+* method: POST
 ### request:
 ```
 {
@@ -70,9 +70,9 @@
 ```
 
 ## User profile information:
-#### endpoint: /profile
-#### method: GET
-#### header: Authorization: <token>
+* endpoint: /profile
+* method: GET
+* header: Authorization: <token>
 
 ### response:
 #### if logged in:
@@ -93,9 +93,9 @@
 ```
 
 ## Change user profile information:
-#### endpoint: /profile
-#### method: PUT
-#### header: Authorization: <token>
+* endpoint: /profile
+* method: PUT
+* header: Authorization: <token>
 
 ### request:
 ```
@@ -151,9 +151,9 @@
 ```
 
 ## Login information:
-#### endpoint: /user/id
-#### method: GET
-#### header: Authorization: <token>
+* endpoint: /user/id
+* method: GET
+* header: Authorization: <token>
 
 ### response:
 ```
@@ -173,9 +173,9 @@
 ```
 
 ## Change login information:
-#### endpoint: /user/id
-#### method: PATCH
-#### header: Authorization: <token>
+* endpoint: /user/id
+* method: PATCH
+* header: Authorization: <token>
 
 ### request:
 ```
@@ -224,9 +224,9 @@
 
 
 ## Delete user's account:
-#### endpoint: /user/id
-#### method: DELETE
-#### header: Authorization: <token>
+* endpoint: /user/id
+* method: DELETE
+* header: Authorization: <token>
 
 ### response:
 ```
@@ -243,9 +243,9 @@
 ```
 
 ## Another user profile information:
-#### endpoint: /profile/<another user's id>
-#### method: GET
-#### header: Authorization: <token>
+* endpoint: /profile/<another user's id>
+* method: GET
+* header: Authorization: <token>
 
 ### response:
 #### if user exists:

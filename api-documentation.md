@@ -1,6 +1,6 @@
 ## User signup:
-#### endpoint: /user/signup
-#### method: POST
+* endpoint: /user/signup
+* method: POST
 ### request:
 ```
 {

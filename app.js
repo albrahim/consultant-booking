@@ -32,6 +32,11 @@ app.use((req, res, next) => {
 app.use('/user', userRouter);
 app.use('/user/id', userIdRouter);
 app.use('/profile', profileRouter);
+app.route('/', (req, res) => {
+    return res.status(200).json({
+        message: 'App is running'
+    })
+});
 
 app.use((req, res, next) => {
     const error = new Error("Not Found");

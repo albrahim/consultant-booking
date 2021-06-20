@@ -15,7 +15,8 @@ router.put('/', checkAuth, (req, res) => {
             if (profiles.length == 0) {
                 let profile = new Profile({
                     user: req.userData.id,
-                    fullName: req.body.fullName,
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
                     gender: req.body.gender,
                     major: req.body.major,
                 })
@@ -33,7 +34,8 @@ router.put('/', checkAuth, (req, res) => {
                 let profile = profiles[0];
                 profile.overwrite({
                     user: profile.user,
-                    fullName: req.body.fullName,
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
                     gender: req.body.gender,
                     major: req.body.major,
                 })
@@ -78,7 +80,8 @@ router.get('/', checkAuth, (req, res) => {
             } else {
                 const profile = profiles[0];
                 return res.status(200).json({
-                    fullName: profile.fullName,
+                    firstName: profile.firstName,
+                    lastName: profile.lastName,
                     gender: profile.gender,
                     major: profile.major
                 });
@@ -114,7 +117,8 @@ router.get('/:userid', checkAuth, (req, res) => {
             return res.status(200).json({});
         }
         res.status(200).json({
-            fullName: result.fullName,
+            firstName: result.firstName,
+            lastName: result.lastName,
             gender: result.gender,
             major: result.major,
         });

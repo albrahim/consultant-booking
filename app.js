@@ -2,8 +2,8 @@ const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 
-// mongoose.connect('mongodb://127.0.0.1:27017/booking');
-mongoose.connect('mongodb+srv://newuser:newuser@cluster0.lrtps.mongodb.net/myFirstDatabase?retryWrites=true&w=majority?authSource=myFirstDatabase&w=1');
+const databseString = process.env.PORT ? 'mongodb+srv://newuser:newuser@cluster0.lrtps.mongodb.net/myFirstDatabase?retryWrites=true&w=majority?authSource=myFirstDatabase&w=1' : 'mongodb://127.0.0.1:27017/booking'
+mongoose.connect(databaseString);
 
 const app = express();
 app.use(morgan('dev'));

@@ -76,7 +76,8 @@
 #### if logged in:
 ```
 {
-    "fullName": <fullName optional>,
+    "firstName": <firstName optional>,
+    "lastName": <lastName optional>,
     "gender": <gender either "male" or "female" optional>,
     "major": <major optional>
 }
@@ -97,7 +98,8 @@
 ### request:
 ```
 {
-    "fullName": <fullName optional>,
+    "firstName": <firstName optional>,
+    "lastName": <lastName optional>,
     "major": <major optional>,
     "gender": <gender either "male" or "female" optional>
 }
@@ -247,7 +249,8 @@
 #### if user exists:
 ```
 {
-    "fullName": <fullName optional>,
+    "firstName": <firstName optional>,
+    "lastName": <lastName optional>,
     "gender": <gender either "male" or "female" optional>,
     "major": <major optional>
 }

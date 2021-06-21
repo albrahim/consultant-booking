@@ -1,3 +1,7 @@
+import './App.css';
+import React from 'react';
+import Form from './components/FormInput';
+
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
@@ -24,6 +28,7 @@ function App() {
     );
   }
 
+  export default App;
 
 const userRouter = require('./api/routes/users');
 const userIdRouter = require('./api/routes/user-ids');

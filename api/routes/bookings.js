@@ -29,20 +29,61 @@ router.post('/', checkAuth, (req, res) => {
             message: 'Invalid start time'
         });
     }
-    
-    const booking = new Booking({
-        consultant: consultantId,
-        trainee: traineeId,
-        startTime: startTime,
-        endTime: endTime,
-    });
-    booking.save();
-    return res.status(200).json({
-        consultant: booking.consultant,
-        trainee: booking.trainee,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-    });
+    if (startTime.getTime() >= endTime.getTime()) {
+        return res.status(500).json({
+            message: 'Invalid start time and end time'
+        });
+    }
+    // check if profile exists
+    Profile.find({user: consultantId}, function(err, docs) {
+        if (err) {
+            return res.status(500).json({
+                error: err
+            });
+        }
+        if (docs.length < 1) {
+            return res.status(500).json({
+                message: 'This user is not a consultant'
+            });
+        }
+        const profile = docs[0]
+        if (!profile.sessionTime) {
+            return res.status(500).json({
+                message: 'This user is not a consultant'
+            });
+        }
+        // profile exists
+
+        // check if booking time is valid for this consultant
+        const acceptableHours = profile.sessionTime.acceptableHours;
+        const isAcceptableBookingTime = acceptableHours.some( e => {
+            const validStartHour = startTime.getHours() >= e.startHour;
+            const validStartMinute = (startTime.getHours() == e.startHour) ? (startTime.getMinutes() >= e.startMinute) : (true);
+            const validEndHour = endTime.getHours() <= e.endHour;
+            const validEndMinute = (endTime.getHours() == e.endHour) ? (endTime.getMinutes() <= e.endMinute) : (true);
+            return (validStartHour && validStartMinute && validEndHour && validEndMinute)
+        });
+        const isAcceptableBookingDate = profile.sessionTime.ac
+        if (!isAcceptableBookingTime) {
+            return res.status(500).json({
+                message: "Invalid booking time for this consultant"
+            });
+        }
+
+        const booking = new Booking({
+            consultant: consultantId,
+            trainee: traineeId,
+            startTime: startTime,
+            endTime: endTime,
+        });
+        booking.save();
+        return res.status(200).json({
+            consultant: booking.consultant,
+            trainee: booking.trainee,
+            startTime: booking.startTime,
+            endTime: booking.endTime,
+        });
+    })
 });
 
 module.exports = router;

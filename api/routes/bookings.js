@@ -63,8 +63,13 @@ router.post('/', checkAuth, (req, res) => {
             const validEndMinute = (endTime.getHours() == e.endHour) ? (endTime.getMinutes() <= e.endMinute) : (true);
             return (validStartHour && validStartMinute && validEndHour && validEndMinute)
         });
-        const isAcceptableBookingDate = profile.sessionTime.ac
-        if (!isAcceptableBookingTime) {
+        const acceptableDays = profile.sessionTime.acceptableDays;
+        const dayNumberMapping = {
+            0: 'sun', 1: 'mon', 2: 'tue', 3: 'thu', 4: 'wed', 5: 'thu', 6: 'fri'
+        }
+
+        const isAcceptableBookingDay = acceptableDays.some(e => dayNumberMapping[startTime.getDay()] === e)
+        if (!isAcceptableBookingTime || !isAcceptableBookingDay) {
             return res.status(500).json({
                 message: "Invalid booking time for this consultant"
             });

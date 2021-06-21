@@ -19,6 +19,7 @@ router.put('/', checkAuth, (req, res) => {
                     lastName: req.body.lastName,
                     gender: req.body.gender,
                     major: req.body.major,
+                    sessionTime: req.body.sessionTime,
                 })
                 profile
                 .save()
@@ -38,6 +39,7 @@ router.put('/', checkAuth, (req, res) => {
                     lastName: req.body.lastName,
                     gender: req.body.gender,
                     major: req.body.major,
+                    sessionTime: req.body.sessionTime,
                 })
                 .save()
                 .then( profile => {
@@ -83,7 +85,8 @@ router.get('/', checkAuth, (req, res) => {
                     firstName: profile.firstName,
                     lastName: profile.lastName,
                     gender: profile.gender,
-                    major: profile.major
+                    major: profile.major,
+                    sessionTime: profile.sessionTime,
                 });
             }
             
@@ -121,6 +124,7 @@ router.get('/:userid', checkAuth, (req, res) => {
             lastName: result.lastName,
             gender: result.gender,
             major: result.major,
+            sessionTime: result.sessionTime,
         });
     });
 });

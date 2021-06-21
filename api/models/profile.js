@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const sessionTimeSchema = require('./session-time').schema;
 
 const profileSchema = mongoose.Schema({
     user: {
@@ -14,6 +15,7 @@ const profileSchema = mongoose.Schema({
         enum: ['male', 'female'],
     },
     major: String,
+    sessionTime: sessionTimeSchema,
 })
 
 module.exports = mongoose.model('Profile', profileSchema);

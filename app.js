@@ -1,6 +1,10 @@
+/*
+
 import './App.css';
 import React from 'react';
 import Form from './components/FormInput';
+*/
+
 
 const express = require('express');
 const morgan = require('morgan');
@@ -17,7 +21,7 @@ app.use(express.urlencoded({
     extended: false
 }));
 
-function App() {
+/*function App() {
     return (
   
       <div className="App">
@@ -29,6 +33,7 @@ function App() {
   }
 
   export default App;
+  */
 
 const userRouter = require('./api/routes/users');
 const userIdRouter = require('./api/routes/user-ids');

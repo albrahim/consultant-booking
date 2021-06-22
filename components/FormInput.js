@@ -87,8 +87,8 @@ class Form extends Component{
             gender: this.state.Gender,
             email: this.state.Email,
             password: this.state.Password,
-            
             })
+
         alert(`${this.state.FirstName} ${this.state.LastName}  Registered Successfully `)
         console.log(
         {

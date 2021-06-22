@@ -57,10 +57,14 @@ router.post('/', checkAuth, (req, res) => {
         // check if booking time is valid for this consultant
         const acceptableHours = profile.sessionTime.acceptableHours;
         const isAcceptableBookingTime = acceptableHours.some( e => {
-            const validStartHour = startTime.getHours() >= e.startHour && startTime.getHours() < e.endHour;
+            const validStartHour = (startTime.getDay() == endTime.getDay()) ? (startTime.getHours() >= e.startHour && startTime.getHours() < e.endHour) : (e.endHour < e.startHour);
+            console.log('validStartHour: ' + validStartHour);
             const validStartMinute = (startTime.getHours() == e.startHour) ? (startTime.getMinutes() >= e.startMinute) : (true);
-            const validEndHour = endTime.getHours() <= e.endHour;
+            console.log('validStartMinute: ' + validStartMinute);
+            const validEndHour = (startTime.getDay() == endTime.getDay()) ? (endTime.getHours() <= e.endHour) : (e.endHour < e.startHour);
+            console.log('validEndHour: ' + validEndHour);
             const validEndMinute = (endTime.getHours() == e.endHour) ? (endTime.getMinutes() <= e.endMinute) : (true);
+            console.log('validEndMinute: ' + validEndMinute);
             return (validStartHour && validStartMinute && validEndHour && validEndMinute)
         });
         const acceptableDays = profile.sessionTime.acceptableDays;

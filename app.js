@@ -1,11 +1,3 @@
-/*
-
-import './App.css';
-import React from 'react';
-import Form from './components/FormInput';
-*/
-
-
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
@@ -21,19 +13,6 @@ app.use(express.urlencoded({
     extended: false
 }));
 
-/*function App() {
-    return (
-  
-      <div className="App">
-        <Form />
-  
-      </div>
-  
-    );
-  }
-
-  export default App;
-  */
 
 const userRouter = require('./api/routes/users');
 const userIdRouter = require('./api/routes/user-ids');

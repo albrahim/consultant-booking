@@ -69,7 +69,7 @@ router.post('/', checkAuth, (req, res) => {
         });
         const acceptableDays = profile.sessionTime.acceptableDays;
         const dayNumberMapping = {
-            0: 'sun', 1: 'mon', 2: 'tue', 3: 'thu', 4: 'wed', 5: 'thu', 6: 'fri'
+            0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat'
         }
 
         const isAcceptableBookingDay = acceptableDays.some(e => dayNumberMapping[startTime.getDay()] === e)
@@ -77,6 +77,17 @@ router.post('/', checkAuth, (req, res) => {
             return res.status(500).json({
                 message: "Invalid booking time for this consultant"
             });
+        }
+
+        const maximumMinutesPerSession = profile.sessionTime.maximumMinutesPerSession;
+        if (maximumMinutesPerSession) {
+            const sessionDurationInMinutes = (endTime.getTime() - startTime.getTime()) / (60 * 1000);
+            console.log('sessionDurationInMinutes: ' + sessionDurationInMinutes);
+            if (sessionDurationInMinutes > maximumMinutesPerSession) {
+                return res.status(500).json({
+                    message: 'Invalid session duration for this consultant'
+                });
+            }
         }
 
         const booking = new Booking({
@@ -92,7 +103,7 @@ router.post('/', checkAuth, (req, res) => {
             startTime: booking.startTime,
             endTime: booking.endTime,
         });
-    })
+    });
 });
 
 module.exports = router;

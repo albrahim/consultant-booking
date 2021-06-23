@@ -15,15 +15,6 @@ const sessionTimeSchema = mongoose.Schema({
     maximumMinutesPerSession: Number,
 }, {_id: false});
 
-/*
-{
-    acceptableHours: [
-        {startHour: , startMinute: , endHour: , endMinute: },
-        {startHour: , startMinute: , endHour: , endMinute: },
-    ]
-}
-*/
-
 module.exports = {
     schema: sessionTimeSchema,
     model: mongoose.model('SessionTime', sessionTimeSchema),

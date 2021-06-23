@@ -43,7 +43,7 @@ router.post('/', checkAuth, (req, res) => {
         }
         if (docs.length < 1) {
             return res.status(500).json({
-                message: 'This user is not a consultant'
+                message: 'Invalid user id'
             });
         }
         const profile = docs[0]
@@ -97,26 +97,40 @@ router.post('/', checkAuth, (req, res) => {
                 return res.status(500).json({error: err});
             }
             console.log(docs);
-            const filteredDocs = docs.filter(e => startTime.getTime() >= e.startTime.getTime() && endTime.getTime() <= e.endTime.getTime());
-            const conflict = filteredDocs.length > 0;
-            if (conflict) {
+            const thereIsConflictWithOtherSessionsForThisConsultant = docs.some(e => startTime.getTime() <= e.endTime.getTime() && endTime.getTime() >= e.startTime.getTime());
+            if (thereIsConflictWithOtherSessionsForThisConsultant) {
                 return res.status(500).json({
-                    message: 'Session already booked'
+                    message: 'Conflict with another consultant session'
                 });
             }
 
-            const booking = new Booking({
-                consultant: consultantId,
+            Booking.find({
                 trainee: traineeId,
-                startTime: startTime,
-                endTime: endTime,
-            });
-            booking.save();
-            return res.status(200).json({
-                consultant: booking.consultant,
-                trainee: booking.trainee,
-                startTime: booking.startTime,
-                endTime: booking.endTime,
+            }, function(err, docs) {
+                if (err) {
+                    return res.status(500).json({error: err});
+                }
+                const thereIsConflictWithOtherSessionsForThisTrainee = docs.some(e => startTime.getTime() <= e.endTime.getTime() && endTime.getTime() >= e.startTime.getTime());
+                if (thereIsConflictWithOtherSessionsForThisTrainee) {
+                    return res.status(500).json({
+                        message: 'Conflict with another trainee session'
+                    });
+                }
+                
+                const booking = new Booking({
+                    consultant: consultantId,
+                    trainee: traineeId,
+                    startTime: startTime,
+                    endTime: endTime,
+                });
+                booking.save();
+                return res.status(200).json({
+                    message: 'Booking successful',
+                    consultant: booking.consultant,
+                    trainee: booking.trainee,
+                    startTime: booking.startTime,
+                    endTime: booking.endTime,
+                });
             });
         });
     });

@@ -17,10 +17,11 @@ router.get('/', checkAuth, (req, res) => {
             lastLoginAt: user.lastLoginAt,
         });
     })
-    .catch(error => {
-        console.log(error);
+    .catch(err => {
+        console.log(err);
         return res.status(500).json({
-            error: error
+            fail: 'error',
+            error: err,
         });
     });
 });
@@ -33,7 +34,7 @@ router.patch('/', checkAuth, async (req, res) => {
         const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
         if (!emailRegex.test(req.body.email.toLowerCase())) {
             return res.status(500).json({
-                message: "Invalid email"
+                fail: "Invalid email"
             })
         }
         updatedFields.email = req.body.email.toLowerCase();
@@ -42,7 +43,7 @@ router.patch('/', checkAuth, async (req, res) => {
     // update password
     if (req.body.password === "") {
         return res.status(500).json({
-            message: "Password cannot be empty"
+            fail: "Password cannot be empty"
         });
     }
     if (req.body.password) {
@@ -51,22 +52,26 @@ router.patch('/', checkAuth, async (req, res) => {
         if (!hash) {
             console.log('bcrypt error');
             return res.status(500).json({
-                error: 'error'
+                fail: 'error',
+                error: {},
             });
         }
         console.log('bycrypt hash: ' + hash);
         updatedFields.hash = hash;
     }
-    User.findByIdAndUpdate(req.userData.id, updatedFields, function(error, result) {
-        if (error) {
-            console.log(error);
+    User.findByIdAndUpdate(req.userData.id, updatedFields, function(err, result) {
+        if (err) {
+            console.log(err);
             if (error.codeName === "DuplicateKey") {
-                return res.status(500).json({error: "Email already in use by another user"})
+                return res.status(500).json({fail: "Email already in use by another user"})
             }
-            return res.status(500).json({error: error});
+            return res.status(500).json({
+                fail: 'error',
+                error: err,
+            });
         }
         return res.status(200).json({
-            message: "Updated successfully",
+            success: "Updated successfully",
         });
     });
 });
@@ -77,13 +82,14 @@ router.delete('/', checkAuth, (req, res) => {
     .then(user => {
         user.remove();
         return res.status(200).json({
-            message: 'Deleted successfully'
+            success: 'Deleted successfully'
         });
     })
-    .catch( error => {
-        console.log(error);
+    .catch( err => {
+        console.log(err);
         res.status(500).json({
-            error: error
+            fail: 'error',
+            error: err,
         });
     });
 });

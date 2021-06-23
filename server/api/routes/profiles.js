@@ -109,8 +109,7 @@ router.get('/:userid', checkAuth, (req, res) => {
                 message: "User doesn't exist"
             });
         }
-    });
-    Profile.findOne({user: req.params.userid}, function(error, result) {
+        Profile.findOne({user: req.params.userid}, function(error, result) {
         console.log('result ' + result);
         if (error) {
             console.log(error);
@@ -127,6 +126,8 @@ router.get('/:userid', checkAuth, (req, res) => {
             sessionTime: result.sessionTime,
         });
     });
+    });
+    
 });
 
 module.exports = router;

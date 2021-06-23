@@ -25,11 +25,14 @@ router.put('/', checkAuth, (req, res) => {
                 .save()
                 .then( result => {
                     return res.status(200).json({
-                        message: 'Profile Updated'
+                        success: 'Profile Updated'
                     });
                 })
-                .catch(error => {
-                    return res.status(500).json(error);
+                .catch(err => {
+                    return res.status(500).json({
+                        fail: 'error',
+                        error: err,
+                    });
                 })
             } else { // if profile exists
                 let profile = profiles[0];
@@ -44,21 +47,25 @@ router.put('/', checkAuth, (req, res) => {
                 .save()
                 .then( profile => {
                     return res.status(200).json({
-                    message: 'Profile Updated'
+                    success: 'Profile Updated'
                     }); 
                 })
-                .catch(error => {
-                    return res.status(500).json(error);
-                })
+                .catch(err => {
+                    return res.status(500).json({
+                        fail: 'error',
+                        error: err,
+                    });
+                });
             }
             
             
             
         })
-        .catch(error => {
-            console.log(error)
+        .catch(err => {
+            console.log(err)
             return res.status(500).json({
-                message: 'Error'
+                fail: 'error',
+                error: err,
             });
         });
 })
@@ -76,8 +83,11 @@ router.get('/', checkAuth, (req, res) => {
                 .then( result => {
                     return res.status(200).json({});
                 })
-                .catch(error => {
-                    return res.status(500).json(error);
+                .catch(err => {
+                    return res.status(500).json({
+                        fail: 'error',
+                        error: err,
+                    });
                 })
             } else {
                 const profile = profiles[0];
@@ -91,32 +101,39 @@ router.get('/', checkAuth, (req, res) => {
             }
             
         })
-        .catch(error => {
+        .catch(err => {
             return res.status(500).json({
-                message: 'Error'
+                fail: 'error',
+                error: err,
             });
         });
 })
 
 router.get('/:userid', checkAuth, (req, res) => {
-    User.findById(req.params.userid, function(error, result) {
-        if (error) {
-            console.log(error);
-            return res.status(500).json({error: error});
+    User.findById(req.params.userid, function(err, result) {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({
+                fail: 'error',
+                error: err,
+            });
         }
         if (result == null) {
             return res.status(404).json({
-                message: "User doesn't exist"
+                fail: "User doesn't exist"
             });
         }
-        Profile.findOne({user: req.params.userid}, function(error, result) {
+        Profile.findOne({user: req.params.userid}, function(err, result) {
         console.log('result ' + result);
-        if (error) {
-            console.log(error);
-            return res.status(500).json({error: error});
+        if (err) {
+            console.log(err);
+            return res.status(500).json({
+                fail: 'error',
+                error: err,
+            });
         }
         if (result == null) {
-            return res.status(200).json({});
+            return res.status(200).json({success: 'success'});
         }
         res.status(200).json({
             firstName: result.firstName,

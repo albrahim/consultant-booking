@@ -14,19 +14,20 @@ module.exports = (req, res, next) => {
             }
             else {
                 return res.status(401).json({
-                    message: 'Auth failed',
+                    fail: 'Auth failed'
                 });
             }
         })
-        .catch(error => {
+        .catch(err => {
             return res.status(401).json({
-                error: 'error',
+                fail: 'error',
+                error: err,
             });
         });
         
     } catch (error) {
         return res.status(401).json({
-            message: 'Auth failed',
+            fail: 'Auth failed'
         });
     }
 };

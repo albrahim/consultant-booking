@@ -15,17 +15,17 @@ router.post('/signup', (req, res) => {
         .then(users => {
             if (users.length >= 1) {
                 return res.status(409).json({
-                    message: 'Email already exists'
+                    fail: 'Email already exists'
                 });
             } else {
                 if (password === "") {
                     return res.status(500).json({
-                        message: "Password cannot be empty"
+                        fail: "Password cannot be empty"
                     });
                 }
                 bcrypt.hash(password, 10, (err, hash) => {
                     if (err) {
-                        return res.status(500).json(err);
+                        return res.status(500).json({fail: 'error', error: err});
                     }
                     const user = new User({
                         _id: new mongoose.Types.ObjectId(),
@@ -38,23 +38,22 @@ router.post('/signup', (req, res) => {
                     .save()
                     .then(result => {
                         res.status(200).json({
-                            message: 'User created',
+                            success: 'User created',
                             user: {
                                 email: user.email,
-                                password: password,
                                 signupAt: user.signupAt,
                                 lastLoginAt: user.lastLoginAt,
                             }
                         });
                     })
-                    .catch(error => {
-                        res.status(500).json(error);
+                    .catch(err => {
+                        res.status(500).json({fail: 'error', error: err});
                     });
                 });
             }
         })
         .catch(err => {
-            return res.json(err);
+            return res.json({fail: 'error', error: err});
         });
 });
 
@@ -67,11 +66,11 @@ router.post('/login', (req, res, next) => {
         const user = users[0];
         bcrypt.compare(password, user.hash, (err, result) => {
             if (err) {
-                return res.status(500).json(err);
+                return res.status(500).json({fail: 'error', error: err});
             }
             if (result == false) {
                 return res.status(401).json({
-                    message: 'Invalid login'
+                    fail: 'Invalid login'
                 });
             }
 
@@ -86,7 +85,7 @@ router.post('/login', (req, res, next) => {
                 });
 
                 return res.status(200).json({
-                    message: 'Auth successful',
+                    success: 'Auth successful',
                     token: token,
                     user: {
                         email: user.email,
@@ -95,15 +94,15 @@ router.post('/login', (req, res, next) => {
                     }
                 });
             })
-            .catch(error => {
-                res.status(500).json(error)
+            .catch(err => {
+                res.status(500).json({fail: 'error', error: err})
             });
         });
         
     })
     .catch( result => {
         return res.status(401).json({
-            message: 'Invalid login'
+            fail: 'Invalid login'
         });
     });
 });

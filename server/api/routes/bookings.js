@@ -16,7 +16,7 @@ router.post('/', checkAuth, (req, res) => {
     // validate all fields filled
     if (!consultantId || !traineeId || !startTimeInput || !endTimeInput) {
         return res.status(500).json({
-            message: 'Invalid request'
+            fail: 'Invalid request'
         });
     }
     // convert from string or integer to date object
@@ -26,30 +26,31 @@ router.post('/', checkAuth, (req, res) => {
     const currentTime = new Date();
     if (startTime.getTime() < currentTime.getTime()) {
         return res.status(500).json({
-            message: 'Invalid start time'
+            fail: 'Invalid start time'
         });
     }
     if (startTime.getTime() >= endTime.getTime()) {
         return res.status(500).json({
-            message: 'Invalid start time and end time'
+            fail: 'Invalid start time and end time'
         });
     }
     // check if profile exists
     Profile.find({user: consultantId}, function(err, docs) {
         if (err) {
             return res.status(500).json({
-                error: err
+                fail: 'error',
+                error: err,
             });
         }
         if (docs.length < 1) {
             return res.status(500).json({
-                message: 'Invalid user id'
+                fail: 'Invalid user id'
             });
         }
         const profile = docs[0]
         if (!profile.sessionTime) {
             return res.status(500).json({
-                message: 'This user is not a consultant'
+                fail: 'This user is not a consultant'
             });
         }
         // profile exists
@@ -75,7 +76,7 @@ router.post('/', checkAuth, (req, res) => {
         const isAcceptableBookingDay = acceptableDays.some(e => dayNumberMapping[startTime.getDay()] === e)
         if (!isAcceptableBookingTime || !isAcceptableBookingDay) {
             return res.status(500).json({
-                message: "Invalid booking time for this consultant"
+                fail: "Invalid booking time for this consultant"
             });
         }
 
@@ -85,7 +86,7 @@ router.post('/', checkAuth, (req, res) => {
             console.log('sessionDurationInMinutes: ' + sessionDurationInMinutes);
             if (sessionDurationInMinutes > maximumMinutesPerSession) {
                 return res.status(500).json({
-                    message: 'Invalid session duration for this consultant'
+                    fail: 'Invalid session duration for this consultant'
                 });
             }
         }
@@ -94,13 +95,16 @@ router.post('/', checkAuth, (req, res) => {
             consultant: consultantId,
         }, function(err, docs) {
             if (err) {
-                return res.status(500).json({error: err});
+                return res.status(500).json({
+                    fail: 'error',
+                    error: err,
+                });
             }
             console.log(docs);
             const thereIsConflictWithOtherSessionsForThisConsultant = docs.some(e => startTime.getTime() <= e.endTime.getTime() && endTime.getTime() >= e.startTime.getTime());
             if (thereIsConflictWithOtherSessionsForThisConsultant) {
                 return res.status(500).json({
-                    message: 'Conflict with another consultant session'
+                    fail: 'Conflict with another consultant session'
                 });
             }
 
@@ -108,12 +112,15 @@ router.post('/', checkAuth, (req, res) => {
                 trainee: traineeId,
             }, function(err, docs) {
                 if (err) {
-                    return res.status(500).json({error: err});
+                    return res.status(500).json({
+                        fail: 'error',
+                        error: err,
+                    });
                 }
                 const thereIsConflictWithOtherSessionsForThisTrainee = docs.some(e => startTime.getTime() <= e.endTime.getTime() && endTime.getTime() >= e.startTime.getTime());
                 if (thereIsConflictWithOtherSessionsForThisTrainee) {
                     return res.status(500).json({
-                        message: 'Conflict with another trainee session'
+                        fail: 'Conflict with another trainee session'
                     });
                 }
                 
@@ -125,7 +132,7 @@ router.post('/', checkAuth, (req, res) => {
                 });
                 booking.save();
                 return res.status(200).json({
-                    message: 'Booking successful',
+                    success: 'Booking successful',
                     consultant: booking.consultant,
                     trainee: booking.trainee,
                     startTime: booking.startTime,

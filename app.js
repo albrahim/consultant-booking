@@ -17,6 +17,7 @@ app.use(express.urlencoded({
 const userRouter = require('./api/routes/users');
 const userIdRouter = require('./api/routes/user-ids');
 const profileRouter = require('./api/routes/profiles');
+const bookingRouter = require('./api/routes/bookings');
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -33,6 +34,7 @@ app.use((req, res, next) => {
 app.use('/user', userRouter);
 app.use('/user/id', userIdRouter);
 app.use('/profile', profileRouter);
+app.use('/book', bookingRouter);
 app.route('/', (req, res) => {
     return res.status(200).json({
         message: 'App is running'

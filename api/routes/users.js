@@ -82,7 +82,7 @@ router.post('/login', (req, res, next) => {
                 },
                 "a secret key",
                 {
-                    expiresIn: "1h",
+                    expiresIn: "5h",
                 });
 
                 return res.status(200).json({

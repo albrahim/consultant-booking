@@ -90,18 +90,34 @@ router.post('/', checkAuth, (req, res) => {
             }
         }
 
-        const booking = new Booking({
+        Booking.find({
             consultant: consultantId,
-            trainee: traineeId,
-            startTime: startTime,
-            endTime: endTime,
-        });
-        booking.save();
-        return res.status(200).json({
-            consultant: booking.consultant,
-            trainee: booking.trainee,
-            startTime: booking.startTime,
-            endTime: booking.endTime,
+        }, function(err, docs) {
+            if (err) {
+                return res.status(500).json({error: err});
+            }
+            console.log(docs);
+            const filteredDocs = docs.filter(e => startTime.getTime() >= e.startTime.getTime() && endTime.getTime() <= e.endTime.getTime());
+            const conflict = filteredDocs.length > 0;
+            if (conflict) {
+                return res.status(500).json({
+                    message: 'Session already booked'
+                });
+            }
+
+            const booking = new Booking({
+                consultant: consultantId,
+                trainee: traineeId,
+                startTime: startTime,
+                endTime: endTime,
+            });
+            booking.save();
+            return res.status(200).json({
+                consultant: booking.consultant,
+                trainee: booking.trainee,
+                startTime: booking.startTime,
+                endTime: booking.endTime,
+            });
         });
     });
 });

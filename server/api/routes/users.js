@@ -15,7 +15,7 @@ router.post('/signup', (req, res) => {
         .then(users => {
             if (users.length >= 1) {
                 return res.status(409).json({
-                    fail: 'Email already exists'
+                    fail: 'Email already in use'
                 });
             } else {
                 if (password === "") {

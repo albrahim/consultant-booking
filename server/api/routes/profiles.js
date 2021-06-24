@@ -29,6 +29,11 @@ router.put('/', checkAuth, (req, res) => {
                     });
                 })
                 .catch(err => {
+                    if (err.errors && err.errors.gender) {
+                        return res.status(500).json({
+                            fail: 'Wrong gender value provided'
+                        });
+                    }
                     return res.status(500).json({
                         fail: 'error',
                         error: err,
@@ -51,6 +56,11 @@ router.put('/', checkAuth, (req, res) => {
                     }); 
                 })
                 .catch(err => {
+                    if (err.errors && err.errors.gender) {
+                        return res.status(500).json({
+                            fail: 'Wrong gender value provided'
+                        });
+                    }
                     return res.status(500).json({
                         fail: 'error',
                         error: err,

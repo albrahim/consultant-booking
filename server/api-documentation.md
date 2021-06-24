@@ -13,7 +13,7 @@
 #### if user signup successfully:
 ```
 {
-    "message": "User created",
+    "success": "User created",
     "user": {
         "email": <email>,
         "password": <password>,
@@ -26,14 +26,14 @@
 #### if email already exists:
 ```
 {
-    "message": "Email already exists"
+    "fail": "Email already exists"
 }
 ```
 
 #### if password not provided:
 ```
 {
-    "message": "Password cannot be empty"
+    "fail": "Password cannot be empty"
 }
 ```
 
@@ -52,7 +52,7 @@
 #### if login successful:
 ```
 {
-    "message": "Auth successful",
+    "success": "Auth successful",
     "token": <login token>,
     "user": {
         "email": <email>,
@@ -65,7 +65,7 @@
 #### if wrong password or email:
 ```
 {
-    "message": "Invalid login"
+    "fail": "Invalid login"
 }
 ```
 
@@ -88,7 +88,7 @@
 #### if not logged in:
 ```
 {
-    "message": "Auth failed"
+    "fail": "Auth failed"
 }
 ```
 
@@ -111,42 +111,21 @@
 #### if changed successfully:
 ```
 {
-    "message": "Profile Updated"
+    "success": "Profile Updated"
 }
 ```
 
 #### if wrong gender value provided:
 ```
-{
-    "errors": {
-        "gender": {
-            "name": "ValidatorError",
-            "message": "`` is not a valid enum value for path `gender`.",
-            "properties": {
-                "message": "`` is not a valid enum value for path `gender`.",
-                "type": "enum",
-                "enumValues": [
-                    "male",
-                    "female"
-                ],
-                "path": "gender",
-                "value": ""
-            },
-            "kind": "enum",
-            "path": "gender",
-            "value": ""
-        }
-    },
-    "_message": "Profile validation failed",
-    "name": "ValidationError",
-    "message": "Profile validation failed: gender: `` is not a valid enum value for path `gender`."
+{{
+    "fail": "Wrong gender value provided"
 }
 ```
 
 #### if not logged in:
 ```
 {
-    "message": "Auth failed"
+    "fail": "Auth failed"
 }
 ```
 
@@ -168,7 +147,7 @@
 #### if not logged in:
 ```
 {
-    "message": "Auth failed"
+    "fail": "Auth failed"
 }
 ```
 
@@ -190,35 +169,35 @@
 #### changed successfully:
 ```
 {
-    "message": "Updated successfully"
+    "success": "Updated successfully"
 }
 ```
 
 #### invalid email provided:
 ```
 {
-    "message": "Invalid email"
+    "fail": "Invalid email"
 }
 ```
 
 #### empty password provided:
 ```
 {
-    "message": "Password cannot be empty"
+    "fail": "Password cannot be empty"
 }
 ```
 
-#### provided email used by another user:
+#### provided email used by another account:
 ```
 {
-    "error": "Email already in use by another user"
+    "fail": "Email already in use"
 }
 ```
 
 #### if not logged in:
 ```
 {
-    "message": "Auth failed"
+    "fail": "Auth failed"
 }
 ```
 
@@ -231,14 +210,14 @@
 ### response:
 ```
 {
-    "message": "Deleted successfully"
+    "success": "Deleted successfully"
 }
 ```
 
 #### if not logged in:
 ```
 {
-    "message": "Auth failed"
+    "fail": "Auth failed"
 }
 ```
 
@@ -261,13 +240,13 @@
 #### if user doesn't exist:
 ```
 {
-    "message": "User doesn't exist"
+    "fail": "User doesn't exist"
 }
 ```
 
 #### if not logged in:
 ```
 {
-    "message": "Auth failed"
+    "fail": "Auth failed"
 }
 ```

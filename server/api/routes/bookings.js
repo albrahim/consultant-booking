@@ -193,7 +193,13 @@ router.get('/reservations/:reservationId', checkAuth, (req, res) => {
         if (doc == null) {
             return res.status(500).json({ fail: 'Reservation not found' });
         }
-        return res.status(200).json(doc);
+        return res.status(200).json({
+            id: doc._id,
+            consultant: doc.consultant,
+            trainee: doc.trainee,
+            startTime: doc.startTime,
+            endTime: doc.endTime,
+        });
     });
 });
 
@@ -201,7 +207,7 @@ router.delete('/reservations/:reservationId', checkAuth, (req, res) => {
     let userId = req.userData.id;
     Booking.findOne({
         _id: req.params.reservationId,
-        $or: [{consultant: userId}, {trainee: userId,}], // User can see reservation only if
+        $or: [{consultant: userId}, {trainee: userId,}], // User can cancel reservation only if
     }, function(err, doc) { //                              he is related to it.
         if (err) {
             console.log(err);

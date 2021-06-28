@@ -1,5 +1,5 @@
 ## User signup:
-* endpoint: /user/signup
+* endpoint: ```/user/signup```
 * method: POST
 ### request:
 ```
@@ -38,7 +38,7 @@
 ```
 
 ## User login:
-* endpoint: /user/login
+* endpoint: ```/user/login```
 * method: POST
 ### request:
 ```
@@ -70,7 +70,7 @@
 ```
 
 ## User profile information:
-* endpoint: /profile
+* endpoint: ```/profile```
 * method: GET
 * header: Authorization: <token>
 
@@ -93,9 +93,9 @@
 ```
 
 ## Change user profile information:
-* endpoint: /profile
+* endpoint: ```/profile```
 * method: PUT
-* header: Authorization: <token>
+* header: ```Authorization: <token>```
 
 ### request:
 ```
@@ -103,7 +103,13 @@
     "firstName": <firstName optional>,
     "lastName": <lastName optional>,
     "major": <major optional>,
-    "gender": <gender either "male" or "female" optional>
+    "gender": <gender either "male" or "female" optional>,
+    "sessionTime": {
+        "acceptableHours": [
+            {"startHour": 2, "startMinute": 0, "endHour": 22, "endMinute": 0}
+        ],
+        "maximumMinutesPerSession": 120
+    }
 }
 ```
 
@@ -130,9 +136,9 @@
 ```
 
 ## Login information:
-* endpoint: /user/id
+* endpoint: ```/user/id```
 * method: GET
-* header: Authorization: <token>
+* header: ```Authorization: <token>```
 
 ### response:
 ```
@@ -152,9 +158,9 @@
 ```
 
 ## Change login information:
-* endpoint: /user/id
+* endpoint: ```/user/id```
 * method: PATCH
-* header: Authorization: <token>
+* header: ```Authorization: <token>```
 
 ### request:
 ```
@@ -203,9 +209,9 @@
 
 
 ## Delete user's account:
-* endpoint: /user/id
+* endpoint: ```/user/id```
 * method: DELETE
-* header: Authorization: <token>
+* header: ```Authorization: <token>```
 
 ### response:
 ```
@@ -222,9 +228,9 @@
 ```
 
 ## Another user profile information:
-* endpoint: /profile/<another user's id>
+* endpoint: ```/profile/<another user's id>```
 * method: GET
-* header: Authorization: <token>
+* header: ```Authorization: <token>```
 
 ### response:
 #### if user exists:
@@ -250,3 +256,84 @@
     "fail": "Auth failed"
 }
 ```
+
+## Reserve a session:
+* endpoint: ```/book/```
+* method: POST
+* header: ```Authorization: <token>```
+
+### request:
+```
+{
+    "consultantId": <consultant id>,
+    "startTime": <start time>,
+    "endTime": <end time>
+}
+```
+
+### response:
+```
+{
+    "success": "Booking successful",
+    "id": <booking id>,
+    "consultant": <consultant id>,
+    "trainee": <trainee id>,
+    "startTime": <start time>,
+    "endTime": <end time>
+}
+```
+#### if one of the fields in the request is missing:
+```
+{
+    "fail": "Invalid request"
+}
+```
+#### if the start time already passed:
+```
+{
+    "fail": "Invalid start time"
+}
+```
+#### if the start time doesn't come before the end time:
+```
+{
+    "fail": "Invalid start time and end time"
+}
+```
+#### if the user id is wrong:
+```
+{
+    "fail": "Invalid user id"
+}
+```
+#### if booking session with user who didn't set consultation time:
+```
+{
+    "fail": "This user is not a consultant"
+}
+```
+#### if booking session time outside consultation time set by the consultant:
+```
+{
+    "fail": "Invalid booking time for this consultant"
+}
+```
+#### if booking session duration excedes maximum duration set by consultant:
+```
+{
+    "fail": "Invalid session duration for this consultant"
+}
+```
+#### if the consultant has another session at the same time:
+```
+{
+    "fail": "Conflict with another consultant session"
+}
+```
+#### if the trainee has another session at the same time:
+```
+{
+    "fail": "Conflict with another trainee session"
+}
+```
+

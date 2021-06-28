@@ -176,4 +176,47 @@ router.get('/reservations', checkAuth, (req, res) => {
     });
 });
 
+router.get('/reservations/:reservationId', checkAuth, (req, res) => {
+    let userId = req.userData.id;
+    Booking.findOne({
+        _id: req.params.reservationId,
+        $or: [{consultant: userId}, {trainee: userId,}], // User can see reservation only if
+    }, function(err, doc) { //                              he is related to it.
+        if (err) {
+            console.log(err);
+            if (err.kind == "ObjectId" && err.name == "CastError") {
+                return res.status(500).json({ fail: 'Wrong id' })
+            }
+            return res.status(500).json({ fail: 'error', error: err });
+        }
+        console.log(doc);
+        if (doc == null) {
+            return res.status(500).json({ fail: 'Reservation not found' });
+        }
+        return res.status(200).json(doc);
+    });
+});
+
+router.delete('/reservations/:reservationId', checkAuth, (req, res) => {
+    let userId = req.userData.id;
+    Booking.findOne({
+        _id: req.params.reservationId,
+        $or: [{consultant: userId}, {trainee: userId,}], // User can see reservation only if
+    }, function(err, doc) { //                              he is related to it.
+        if (err) {
+            console.log(err);
+            if (err.kind == "ObjectId" && err.name == "CastError") {
+                return res.status(500).json({ fail: 'Wrong id' })
+            }
+            return res.status(500).json({ fail: 'error', error: err });
+        }
+        console.log(doc);
+        if (doc == null) {
+            return res.status(500).json({ fail: 'Reservation not found' });
+        }
+        doc.delete();
+        return res.status(200).json({ success: 'Canceled successfully'})
+    });
+});
+
 module.exports = router;

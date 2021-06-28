@@ -220,8 +220,12 @@ router.delete('/reservations/:reservationId', checkAuth, (req, res) => {
         if (doc == null) {
             return res.status(500).json({ fail: 'Reservation not found' });
         }
-        doc.delete();
-        return res.status(200).json({ success: 'Canceled successfully'})
+        doc.delete(function(err) {
+            if (err) {
+                return res.status(500).json({ fail: 'error', error: err });
+            }
+            return res.status(200).json({ success: 'Canceled successfully'})
+        });
     });
 });
 

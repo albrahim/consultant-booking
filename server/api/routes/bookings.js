@@ -189,7 +189,6 @@ router.get('/reservations/:reservationId', checkAuth, (req, res) => {
             }
             return res.status(500).json({ fail: 'error', error: err });
         }
-        console.log(doc);
         if (doc == null) {
             return res.status(500).json({ fail: 'Reservation not found' });
         }
@@ -216,7 +215,6 @@ router.delete('/reservations/:reservationId', checkAuth, (req, res) => {
             }
             return res.status(500).json({ fail: 'error', error: err });
         }
-        console.log(doc);
         if (doc == null) {
             return res.status(500).json({ fail: 'Reservation not found' });
         }

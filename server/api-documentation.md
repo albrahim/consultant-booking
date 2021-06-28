@@ -72,7 +72,7 @@
 ## User profile information:
 * endpoint: ```/profile```
 * method: GET
-* header: Authorization: <token>
+* header: ```Authorization: <token>```
 
 ### response:
 #### if logged in:

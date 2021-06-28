@@ -145,19 +145,33 @@ router.post('/', checkAuth, (req, res) => {
 });
 
 router.get('/reservations', checkAuth, (req, res) => {
-    let traineeId = req.userData.id;
-    Booking.find({ trainee: traineeId }, function(err, docs) {
+    let userId = req.userData.id;
+    Booking.find({ trainee: userId }, function(err, asTraineeDocs) {
         if (err) {
             res.status(500).json({ fail: 'error', error: err });
         }
-        res.status(200).json({
-            reservations: docs.map(e => ({
+        Booking.find({ consultant: userId }, function(err, asConsultantDocs) {
+            if (err) {
+                res.status(500).json({ fail: 'error', error: err });
+            }
+            let asConsultantArray = asConsultantDocs.map(e => ({
                 id: e._id,
                 consultant: e.consultant,
                 trainee: e.trainee,
                 startTime: e.startTime,
                 endTime: e.endTime,
-            }))
+            }));
+            let asTraineeArray = asTraineeDocs.map(e => ({
+                id: e._id,
+                consultant: e.consultant,
+                trainee: e.trainee,
+                startTime: e.startTime,
+                endTime: e.endTime,
+            }));
+            res.status(200).json({
+                asConsultant: asConsultantArray,
+                asTrainee: asTraineeArray,
+            });
         });
     });
 });

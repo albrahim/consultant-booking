@@ -133,12 +133,31 @@ router.post('/', checkAuth, (req, res) => {
                 booking.save();
                 return res.status(200).json({
                     success: 'Booking successful',
+                    id: booking._id,
                     consultant: booking.consultant,
                     trainee: booking.trainee,
                     startTime: booking.startTime,
                     endTime: booking.endTime,
                 });
             });
+        });
+    });
+});
+
+router.get('/reservations', checkAuth, (req, res) => {
+    let traineeId = req.userData.id;
+    Booking.find({ trainee: traineeId }, function(err, docs) {
+        if (err) {
+            res.status(500).json({ fail: 'error', error: err });
+        }
+        res.status(200).json({
+            reservations: docs.map(e => ({
+                id: e._id,
+                consultant: e.consultant,
+                trainee: e.trainee,
+                startTime: e.startTime,
+                endTime: e.endTime,
+            }))
         });
     });
 });

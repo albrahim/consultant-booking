@@ -90,11 +90,11 @@ router.post('/', checkAuth, (req, res) => {
             });
         }
 
-        const maximumMinutesPerSession = profile.sessionTime.maximumMinutesPerSession;
-        if (maximumMinutesPerSession) {
+        const minutesPerSession = profile.sessionTime.minutesPerSession;
+        if (minutesPerSession) {
             const sessionDurationInMinutes = (endTime.getTime() - startTime.getTime()) / (60 * 1000);
             console.log('sessionDurationInMinutes: ' + sessionDurationInMinutes);
-            if (sessionDurationInMinutes > maximumMinutesPerSession) {
+            if (sessionDurationInMinutes != minutesPerSession) {
                 return res.status(500).json({
                     fail: 'Invalid session duration for this consultant'
                 });

@@ -45,9 +45,9 @@ router.put('/', checkAuth, (req, res) => {
                         });
                     }
                 }
-                if (sessionTime.maximumMinutesPerSession) { // validate minutes per session
-                    const maximumMinutesPerSession = sessionTime.maximumMinutesPerSession;
-                    if (![30, 60].includes(maximumMinutesPerSession)) {
+                if (sessionTime.minutesPerSession) { // validate minutes per session
+                    const minutesPerSession = sessionTime.minutesPerSession;
+                    if (![30, 60].includes(minutesPerSession)) {
                         return res.status(500).json({
                             fail: 'Invalid minutes per session'
                         });

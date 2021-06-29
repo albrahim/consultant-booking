@@ -12,7 +12,7 @@ const sessionTimeSchema = mongoose.Schema({
         endHour: Number,
         endMinute: Number
     }, {_id: false})],
-    maximumMinutesPerSession: Number,
+    minutesPerSession: Number,
 }, {_id: false});
 
 module.exports = {

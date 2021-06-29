@@ -111,7 +111,7 @@ router.post('/', checkAuth, (req, res) => {
                 });
             }
             console.log(docs);
-            const thereIsConflictWithOtherSessionsForThisConsultant = docs.some(e => startTime.getTime() <= e.endTime.getTime() && endTime.getTime() >= e.startTime.getTime());
+            const thereIsConflictWithOtherSessionsForThisConsultant = docs.some(e => startTime.getTime() < e.endTime.getTime() && endTime.getTime() > e.startTime.getTime());
             if (thereIsConflictWithOtherSessionsForThisConsultant) {
                 return res.status(500).json({
                     fail: 'Conflict with another consultant session'
@@ -127,7 +127,7 @@ router.post('/', checkAuth, (req, res) => {
                         error: err,
                     });
                 }
-                const thereIsConflictWithOtherSessionsForThisTrainee = docs.some(e => startTime.getTime() <= e.endTime.getTime() && endTime.getTime() >= e.startTime.getTime());
+                const thereIsConflictWithOtherSessionsForThisTrainee = docs.some(e => startTime.getTime() < e.endTime.getTime() && endTime.getTime() > e.startTime.getTime());
                 if (thereIsConflictWithOtherSessionsForThisTrainee) {
                     return res.status(500).json({
                         fail: 'Conflict with another trainee session'
@@ -197,40 +197,51 @@ router.get('/timeslots/:consultantId', checkAuth, (req, res) => {
 
         const acceptableHours = doc.sessionTime.acceptableHours;
         const minutesPerSession = doc.sessionTime.minutesPerSession ? doc.sessionTime.minutesPerSession : 30;
-        let timeslots = [];
-        acceptableHours.forEach(e => {
-            const startInMinutes = (e.startHour * 60 + e.startMinute);
-            console.log('start in minutes: ' + startInMinutes);
-            const endInMinutes = (e.endHour * 60 + e.endMinute);
-            console.log('end in minutes: ' + endInMinutes);
-            const today = new Date();
-            today.setHours(0);
-            today.setMinutes(0);
-            today.setSeconds(0);
-
-            const startDate = new Date(today);
-            startDate.setMinutes(startInMinutes);
-            const endDate = new Date(today);
-            endDate.setMinutes(endInMinutes);
-
-            let startc = startInMinutes;
-            console.log('startc' + startc)
-            let endc = startc + minutesPerSession;
-            console.log('endc' + endc);
-            while (startc < endInMinutes) {
-                const start = new Date(today);
-                start.setMinutes(startc);
-                const end = new Date(today);
-                end.setMinutes(endc);
-                timeslots.push({
-                    start,
-                    end
-                });
-                startc += minutesPerSession;
-                endc += minutesPerSession;
+        Booking.find({
+            consultant: req.params.consultantId,
+        }, function(err, docs) {
+            if (err) {
+                console.log(err);
+                return
             }
+            let timeslots = [];
+            acceptableHours.forEach(e => {
+                const startInMinutes = (e.startHour * 60 + e.startMinute);
+                console.log('start in minutes: ' + startInMinutes);
+                const endInMinutes = (e.endHour * 60 + e.endMinute);
+                console.log('end in minutes: ' + endInMinutes);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+    
+                const startDate = new Date(today);
+                startDate.setMinutes(startInMinutes);
+                const endDate = new Date(today);
+                endDate.setMinutes(endInMinutes);
+    
+                let startc = startInMinutes;
+                console.log('startc' + startc)
+                let endc = startc + minutesPerSession;
+                console.log('endc' + endc);
+                while (startc < endInMinutes) {
+                    const startTime = new Date(today);
+                    startTime.setMinutes(startc);
+                    const endTime = new Date(today);
+                    endTime.setMinutes(endc);
+
+                    const conflict = docs.some(e => (startTime.getTime() < e.endTime.getTime() && endTime.getTime() > e.startTime.getTime()));
+                    if (!conflict)  {
+                        timeslots.push({
+                            start: startTime,
+                            end: endTime
+                        })
+                    }
+    
+                    startc += minutesPerSession;
+                    endc += minutesPerSession;
+                }
+            });
+            return res.status(200).json({ timeslots });
         });
-        return res.status(200).json({ timeslots });
     });
 });
 

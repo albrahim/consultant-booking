@@ -24,6 +24,16 @@ router.post('/', checkAuth, (req, res) => {
     let endTime = new Date(endTimeInput);
     // validate start time
     const currentTime = new Date();
+    if (![0, 30].includes(startTime.getMinutes())) {
+        return res.status(500).json({
+            fail: 'Invalid start minute'
+        });
+    }
+    if (![0, 30].includes(endTime.getMinutes())) {
+        return res.status(500).json({
+            fail: 'Invalid end minute'
+        });
+    }
     if (startTime.getTime() < currentTime.getTime()) {
         return res.status(500).json({
             fail: 'Invalid start time'

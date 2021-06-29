@@ -186,6 +186,54 @@ router.get('/reservations', checkAuth, (req, res) => {
     });
 });
 
+router.get('/timeslots/:consultantId', checkAuth, (req, res) => {
+    Profile.findOne({user: req.params.consultantId}, function(err, doc) {
+        if (err) {
+            return res.status(500).json({ fail: 'error', error: err });
+        }
+        if (doc == null || !doc.sessionTime) {
+            return res.status(500).json({ fail: 'Invalid consultant id' }); 
+        }
+
+        const acceptableHours = doc.sessionTime.acceptableHours;
+        const minutesPerSession = doc.sessionTime.minutesPerSession ? doc.sessionTime.minutesPerSession : 30;
+        let timeslots = [];
+        acceptableHours.forEach(e => {
+            const startInMinutes = (e.startHour * 60 + e.startMinute);
+            console.log('start in minutes: ' + startInMinutes);
+            const endInMinutes = (e.endHour * 60 + e.endMinute);
+            console.log('end in minutes: ' + endInMinutes);
+            const today = new Date();
+            today.setHours(0);
+            today.setMinutes(0);
+            today.setSeconds(0);
+
+            const startDate = new Date(today);
+            startDate.setMinutes(startInMinutes);
+            const endDate = new Date(today);
+            endDate.setMinutes(endInMinutes);
+
+            let startc = startInMinutes;
+            console.log('startc' + startc)
+            let endc = startc + minutesPerSession;
+            console.log('endc' + endc);
+            while (startc < endInMinutes) {
+                const start = new Date(today);
+                start.setMinutes(startc);
+                const end = new Date(today);
+                end.setMinutes(endc);
+                timeslots.push({
+                    start,
+                    end
+                });
+                startc += minutesPerSession;
+                endc += minutesPerSession;
+            }
+        });
+        return res.status(200).json({ timeslots });
+    });
+});
+
 router.get('/reservations/:reservationId', checkAuth, (req, res) => {
     let userId = req.userData.id;
     Booking.findOne({

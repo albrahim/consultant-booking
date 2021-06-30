@@ -54,6 +54,19 @@ router.post('/', checkAuth, (req, res) => {
             fail: 'Invalid start time and end time'
         });
     }
+    // require booking to be in the current week
+    const currentWeekStart = new Date(currentTime);
+    currentWeekStart.setHours(0, 0, 0, 0);
+    currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
+    const currentWeekEnd = new Date(currentWeekStart);
+    currentWeekEnd.setDate(currentWeekEnd.getDate() + 7);
+    console.log(`week start: ${currentWeekStart}`);
+    console.log(`week end: ${currentWeekEnd}`);
+    if (startTime.getTime() >= currentWeekEnd.getTime()) {
+        return res.status(500).json({
+            fail: 'Can only book for the current week'
+        });
+    }
     // check if profile exists
     Profile.find({user: consultantId}, function(err, docs) {
         if (err) {

@@ -23,7 +23,16 @@ router.post('/', checkAuth, (req, res) => {
     let startTime = new Date(startTimeInput);
     let endTime = new Date(endTimeInput);
     // validate start time
-    const currentTime = new Date();
+    if (startTime.getSeconds() != 0 || startTime.getMilliseconds() != 0) {
+        return res.status(500).json({
+            fail: 'Invalid start seconds'
+        });
+    }
+    if (endTime.getSeconds() != 0 || endTime.getMilliseconds() != 0) {
+        return res.status(500).json({
+            fail: 'Invalid end seconds'
+        });
+    }
     if (![0, 30].includes(startTime.getMinutes())) {
         return res.status(500).json({
             fail: 'Invalid start minute'
@@ -34,6 +43,7 @@ router.post('/', checkAuth, (req, res) => {
             fail: 'Invalid end minute'
         });
     }
+    const currentTime = new Date();
     if (startTime.getTime() < currentTime.getTime()) {
         return res.status(500).json({
             fail: 'Invalid start time'

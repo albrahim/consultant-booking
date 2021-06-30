@@ -206,6 +206,7 @@ router.get('/timeslots/:consultantId', checkAuth, (req, res) => {
         }
 
         const acceptableHours = doc.sessionTime.acceptableHours;
+        const acceptableDays = doc.sessionTime.acceptableDays;
         const minutesPerSession = doc.sessionTime.minutesPerSession ? doc.sessionTime.minutesPerSession : 30;
         Booking.find({
             consultant: req.params.consultantId,
@@ -214,41 +215,49 @@ router.get('/timeslots/:consultantId', checkAuth, (req, res) => {
                 console.log(err);
                 return
             }
+            const numberDayMapping = {
+                'sun': 0, 'mon': 1, 'tue': 2, 'wed': 3, 'thu': 4, 'fri': 5, 'sat': 6,
+            }
+            const now = new Date();
             let timeslots = [];
-            acceptableHours.forEach(e => {
-                const startInMinutes = (e.startHour * 60 + e.startMinute);
-                console.log('start in minutes: ' + startInMinutes);
-                const endInMinutes = (e.endHour * 60 + e.endMinute);
-                console.log('end in minutes: ' + endInMinutes);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-    
-                const startDate = new Date(today);
-                startDate.setMinutes(startInMinutes);
-                const endDate = new Date(today);
-                endDate.setMinutes(endInMinutes);
-    
-                let startc = startInMinutes;
-                console.log('startc' + startc)
-                let endc = startc + minutesPerSession;
-                console.log('endc' + endc);
-                while (startc < endInMinutes) {
-                    const startTime = new Date(today);
-                    startTime.setMinutes(startc);
-                    const endTime = new Date(today);
-                    endTime.setMinutes(endc);
+            acceptableDays.forEach(day => {
+                acceptableHours.forEach(time => {
+                    const startInMinutes = (time.startHour * 60 + time.startMinute);
+                    console.log('start in minutes: ' + startInMinutes);
+                    const endInMinutes = (time.endHour * 60 + time.endMinute);
+                    console.log('end in minutes: ' + endInMinutes);
+                    const dayDate = new Date();
+                    dayDate.setHours(0, 0, 0, 0);
+                    dayDate.setDate(dayDate.getDate() - dayDate.getDay() + numberDayMapping[day]);
+        
+                    const startDate = new Date(dayDate);
+                    startDate.setMinutes(startInMinutes);
+                    const endDate = new Date(dayDate);
+                    endDate.setMinutes(endInMinutes);
+        
+                    let startc = startInMinutes;
+                    console.log('startc' + startc)
+                    let endc = startc + minutesPerSession;
+                    console.log('endc' + endc);
+                    while (startc < endInMinutes) {
+                        const startTime = new Date(dayDate);
+                        startTime.setMinutes(startc);
+                        const endTime = new Date(dayDate);
+                        endTime.setMinutes(endc);
 
-                    const conflict = docs.some(e => (startTime.getTime() < e.endTime.getTime() && endTime.getTime() > e.startTime.getTime()));
-                    if (!conflict)  {
-                        timeslots.push({
-                            start: startTime,
-                            end: endTime
-                        })
+                        const startTimeAlreadyPassed = startTime.getTime() <= now.getTime()
+                        const conflict = docs.some(e => (startTime.getTime() < e.endTime.getTime() && endTime.getTime() > e.startTime.getTime()));
+                        if (!conflict && !startTimeAlreadyPassed)  {
+                            timeslots.push({
+                                startTime: startTime,
+                                endTime: endTime
+                            })
+                        }
+        
+                        startc += minutesPerSession;
+                        endc += minutesPerSession;
                     }
-    
-                    startc += minutesPerSession;
-                    endc += minutesPerSession;
-                }
+                });
             });
             return res.status(200).json({ timeslots });
         });

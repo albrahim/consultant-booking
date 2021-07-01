@@ -263,7 +263,7 @@ minutes per session can be either 30 or 60
 }
 ```
 
-## See available timeslots for reservation:
+## Available timeslots for reservation:
 * endpoint: ```/session/available-timeslots/<consultant id>```
 * method: GET
 * header: ```Authorization: <token>```
@@ -376,7 +376,7 @@ that are available for booking
 ```
 
 
-## Retrieve reserved sessions:
+## Reserved sessions:
 * endpoint: ```/session/reserved```
 * method: GET
 * header: ```Authorization: <token>```
@@ -406,7 +406,7 @@ that are available for booking
 ```
 
 
-## Get information of a reservation:
+## Reserved session info:
 * endpoint: ```/session/reserved/<reservation id>```
 * method: GET
 * header: ```Authorization: <token>```
@@ -436,7 +436,7 @@ that are available for booking
 }
 ```
 
-## Cancel a reservation:
+## Cancel reservation:
 * endpoint: ```/session/reserved/<reservation id>```
 * method: DELETE
 * header: ```Authorization: <token>```

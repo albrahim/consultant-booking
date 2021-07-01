@@ -8,7 +8,7 @@ const Booking = require('../models/booking');
 
 const checkAuth = require('../middleware/check-auth');
 
-router.post('/', checkAuth, (req, res) => {
+router.post('/reserved', checkAuth, (req, res) => {
     let consultantId = req.body.consultantId;
     let traineeId = req.userData.id;
     let startTimeInput = req.body.startTime; // string or integer
@@ -177,7 +177,7 @@ router.post('/', checkAuth, (req, res) => {
     });
 });
 
-router.get('/reservations', checkAuth, (req, res) => {
+router.get('/reserved', checkAuth, (req, res) => {
     let userId = req.userData.id;
     Booking.find({ trainee: userId }, function(err, asTraineeDocs) {
         if (err) {
@@ -209,7 +209,7 @@ router.get('/reservations', checkAuth, (req, res) => {
     });
 });
 
-router.get('/timeslots/:consultantId', checkAuth, (req, res) => {
+router.get('/available-timeslots/:consultantId', checkAuth, (req, res) => {
     Profile.findOne({user: req.params.consultantId}, function(err, doc) {
         if (err) {
             return res.status(500).json({ fail: 'error', error: err });
@@ -277,7 +277,7 @@ router.get('/timeslots/:consultantId', checkAuth, (req, res) => {
     });
 });
 
-router.get('/reservations/:reservationId', checkAuth, (req, res) => {
+router.get('/reserved/:reservationId', checkAuth, (req, res) => {
     let userId = req.userData.id;
     Booking.findOne({
         _id: req.params.reservationId,
@@ -303,7 +303,7 @@ router.get('/reservations/:reservationId', checkAuth, (req, res) => {
     });
 });
 
-router.delete('/reservations/:reservationId', checkAuth, (req, res) => {
+router.delete('/reserved/:reservationId', checkAuth, (req, res) => {
     let userId = req.userData.id;
     Booking.findOne({
         _id: req.params.reservationId,

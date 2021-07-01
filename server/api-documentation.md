@@ -104,14 +104,19 @@
     "lastName": <lastName optional>,
     "major": <major optional>,
     "gender": <gender either "male" or "female" optional>,
-    "sessionTime": {
-        "acceptableHours": [
-            {"startHour": 2, "startMinute": 0, "endHour": 22, "endMinute": 0}
-        ],
-        "maximumMinutesPerSession": 120
-    }
+    "sessionTime": <session-time object optional>
 }
 ```
+#### session-time object example:
+```
+{
+    "acceptableHours": [
+        {"startHour": 2, "startMinute": 0, "endHour": 22, "endMinute": 0}
+    ],
+    "minutesPerSession": 60
+}
+```
+minutes per session can be either 30 or 60
 
 ### response:
 #### if changed successfully:
@@ -240,6 +245,7 @@
     "lastName": <lastName optional>,
     "gender": <gender either "male" or "female" optional>,
     "major": <major optional>
+    "sessionTime": <sessionTime object optional>
 }
 ```
 
@@ -257,8 +263,40 @@
 }
 ```
 
+## See available timeslots for reservation:
+* endpoint: ```/session/available-timeslots/<consultant id>```
+* method: GET
+* header: ```Authorization: <token>```
+
+### example response:
+```
+{
+    "timeslots": [
+        {
+            "startTime": "2021-07-01T17:00:00.000Z",
+            "endTime": "2021-07-01T17:30:00.000Z"
+        },
+        {
+            "startTime": "2021-07-01T17:30:00.000Z",
+            "endTime": "2021-07-01T18:00:00.000Z"
+        },
+        {
+            "startTime": "2021-07-01T18:00:00.000Z",
+            "endTime": "2021-07-01T18:30:00.000Z"
+        },
+        {
+            "startTime": "2021-07-01T18:30:00.000Z",
+            "endTime": "2021-07-01T19:00:00.000Z"
+        }
+    ]
+}
+```
+#### Note:
+Timeslot API only shows upcoming sessions in the current week
+that are available for booking
+
 ## Reserve a session:
-* endpoint: ```/book/```
+* endpoint: ```/session/reserved```
 * method: POST
 * header: ```Authorization: <token>```
 
@@ -337,3 +375,89 @@
 }
 ```
 
+
+## Retrieve reserved sessions:
+* endpoint: ```/session/reserved```
+* method: GET
+* header: ```Authorization: <token>```
+
+### response:
+```
+{
+    "asConsultant": [
+        {
+            "id": <reservation id>,
+            "consultant": <consultant id>,
+            "trainee": <trainee id>,
+            "startTime": <start time>,
+            "endTime": <end time>
+        }
+    ],
+    "asTrainee": [
+        {
+            "id": <reservation id>,
+            "consultant": <consultant id>,
+            "trainee": <trainee id>,
+            "startTime": <start time>,
+            "endTime": <end time>
+        }
+    ]
+}
+```
+
+
+## Get information of a reservation:
+* endpoint: ```/session/reserved/<reservation id>```
+* method: GET
+* header: ```Authorization: <token>```
+
+### response:
+```
+{
+    "id": <reservation id>,
+    "consultant": <consultant id>,
+    "trainee": <trainee id>,
+    "startTime": <start time>,
+    "endTime": <end time>
+}
+```
+
+#### if reservation doesn't exist:
+```
+{
+    "fail": "Reservation not found"
+}
+```
+
+#### if wrong id:
+```
+{
+    "fail": "Wrong id"
+}
+```
+
+## Cancel a reservation:
+* endpoint: ```/session/reserved/<reservation id>```
+* method: DELETE
+* header: ```Authorization: <token>```
+
+### response:
+```
+{
+    "success": "Canceled successfully"
+}
+```
+
+#### if reservation doesn't exist:
+```
+{
+    "fail": "Reservation not found"
+}
+```
+
+#### if wrong id:
+```
+{
+    "fail": "Wrong id"
+}
+```

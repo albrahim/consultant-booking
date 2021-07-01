@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 app.use('/user', userRouter);
 app.use('/user/id', userIdRouter);
 app.use('/profile', profileRouter);
-app.use('/book', bookingRouter);
+app.use('/session', bookingRouter);
 app.route('/', (req, res) => {
     return res.status(200).json({
         message: 'App is running'

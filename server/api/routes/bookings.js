@@ -164,6 +164,61 @@ router.post('/reserved', checkAuth, (req, res) => {
                     endTime: endTime,
                 });
                 booking.save();
+
+                // start sending email
+                const nodemailer = require('nodemailer');
+                async function sendConsultantBookedMail() {
+                    User.findById(consultantId, async function(err, consultantDoc) {
+                        if (err) {
+                            console.log(err);
+                            return;
+                        }
+                        Profile.findOne({user: traineeId}, async function(err, traineeProfile) {
+                            if (err) {
+                                console.log(err);
+                                return;
+                            }
+                            let fullName = null;
+                            if (traineeProfile) {
+                                if (traineeProfile.firstName && traineeProfile.lastName) {
+                                    fullName = (traineeProfile.firstName + ' ' + traineeProfile.lastName);
+                                }
+                            }
+                            console.log('fullname: ' + fullName);
+                            let transporter = nodemailer.createTransport({
+                                host: "smtp.ethereal.email",
+                                port: 587,
+                                auth: {
+                                    user: 'lloyd75@ethereal.email',
+                                    pass: 'BbcPe8t2wx3hqZanTW',
+                                },
+                                tls: {
+                                    rejectUnauthorized: false
+                                }
+                            });
+                            const emailData = {
+                                from: '"Lloyd Stanton" <lloyd75@ethereal.email>',
+                                to: consultantDoc.email,
+                                subject: "You have a new trainee",
+                                text: `${fullName ? `The trainee ${fullName}` : 'A trainee'} booked a session with you, starting from ${booking.startTime} and ending at ${booking.endTime}`,
+                                html: `<b>${fullName ? `The trainee ${fullName}` : 'A trainee'} booked a session with you</b><ul><li>starting: ${booking.startTime}</li><li>ending:${booking.endTime}</li></ul>`
+                            };
+                            console.log(`Email data: ${JSON.stringify(emailData)}`);
+                            try {
+                                let info = await transporter.sendMail(emailData);
+                                console.log(`Message sent: ${info.messageId}`);
+                                console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
+                            } catch (e) {
+                                console.log(`Message Not sent!`);
+                                return;
+                            }
+                        });
+                    });
+                }
+                sendConsultantBookedMail().catch(console.log);
+                // end send email
+
+                // return the response
                 return res.status(200).json({
                     success: 'Booking successful',
                     id: booking._id,
@@ -319,11 +374,85 @@ router.delete('/reserved/:reservationId', checkAuth, (req, res) => {
         if (doc == null) {
             return res.status(500).json({ fail: 'Reservation not found' });
         }
+
+        const deleteByConsultant = (userId == doc.consultant);
         doc.delete(function(err) {
             if (err) {
                 return res.status(500).json({ fail: 'error', error: err });
             }
-            return res.status(200).json({ success: 'Canceled successfully'})
+
+            // Successfully Deleted
+
+            // start sending email
+            const nodemailer = require('nodemailer');
+            async function sendSessionCanceledMail() {
+                Profile.findOne({user: doc.consultant}, async function(err, consultantProfile) {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    Profile.findOne({user: doc.trainee}, async function(err, traineeProfile) {
+                        if (err) {
+                            console.log(err);
+                            return;
+                        }
+                        let consultantFullName = null;
+                        let traineeFullName = null;
+                        if (consultantProfile) {
+                            if (consultantProfile.firstName && consultantProfile.lastName) {
+                                consultantFullName = (consultantProfile.firstName + ' ' + consultantProfile.lastName);
+                            }
+                        }
+                        if (traineeProfile) {
+                            if (traineeProfile.firstName && traineeProfile.lastName) {
+                                traineeFullName = (traineeProfile.firstName + ' ' + traineeProfile.lastName);
+                            }
+                        }
+                        console.log('consultant fullname: ' + consultantFullName);
+                        console.log('trainee fullname: ' + traineeFullName);
+                        let transporter = nodemailer.createTransport({
+                            host: "smtp.ethereal.email",
+                            port: 587,
+                            auth: {
+                                user: 'lloyd75@ethereal.email',
+                                pass: 'BbcPe8t2wx3hqZanTW',
+                            },
+                            tls: {
+                                rejectUnauthorized: false
+                            }
+                        });
+                        consultantProfile.populate('user');
+                        traineeProfile.populate('user')
+                        const emailData = deleteByConsultant ? {
+                            from: '"Lloyd Stanton" <lloyd75@ethereal.email>',
+                            to: traineeProfile.user.email,
+                            subject: `Your booking with ${consultantFullName ? `consultant ${consultantFullName}` : 'a consultant'} is cancelled`,
+                            text: `Your booking with ${consultantFullName ? `consultant ${consultantFullName}` : 'a consultant'} is cancelled`,
+                            html: `<b>Your booking with ${consultantFullName ? `consultant ${consultantFullName}` : 'a consultant'} is cancelled</b>`
+                        } : {
+                            from: '"Lloyd Stanton" <lloyd75@ethereal.email>',
+                            to: consultantProfile.user.email,
+                            subject: `Your session with ${traineeFullName ? `the trainee ${traineeFullName}` : 'a trainee'} is cancelled`,
+                            text: `Your session with ${traineeFullName ? `the trainee ${traineeFullName}` : 'a trainee'} is cancelled`,
+                            html: `<b>Your session with ${traineeFullName ? `the trainee ${traineeFullName}` : 'a trainee'} is cancelled</b>`,
+                        };
+                        console.log(`Email data: ${JSON.stringify(emailData)}`);
+                        try {
+                            let info = await transporter.sendMail(emailData);
+                            console.log(`Message sent: ${info.messageId}`);
+                            console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
+                        } catch (e) {
+                            console.log(`Message Not sent!`);
+                            return;
+                        }
+                    });
+                });
+            }
+            sendSessionCanceledMail().catch(console.log);
+            // end send email
+
+            // Send response
+            return res.status(200).json({ success: 'Canceled successfully' });
         });
     });
 });

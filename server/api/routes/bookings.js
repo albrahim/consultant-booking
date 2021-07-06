@@ -341,7 +341,7 @@ router.delete('/reserved/:reservationId', checkAuth, (req, res) => {
             // start sending email
             email.sendSessionCanceledMail({
                 booking: doc,
-                deleteByConsultant: req.userData.id == doc.consultant,
+                deleteByConsultant: deleteByConsultant,
             })
             .catch(console.log);
             // end send email

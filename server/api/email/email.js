@@ -103,12 +103,14 @@ async function sendConsultantBookedMail({booking}) {
                 }
             }
             console.log('fullname: ' + fullName);
+            const traineeWord = fullName ? `The trainee ${fullName}` : 'A trainee';
+            const traineeWordLower = fullName ? `the trainee ${fullName}` : 'a trainee';
             const emailData = {
                 from: fromField,
                 to: consultantDoc.email,
-                subject: "You have a new trainee",
-                text: `${fullName ? `The trainee ${fullName}` : 'A trainee'} booked a session with you, starting from ${booking.startTime} and ending at ${booking.endTime}`,
-                html: `<b>${fullName ? `The trainee ${fullName}` : 'A trainee'} booked a session with you</b><ul><li>starting: ${booking.startTime}</li><li>ending:${booking.endTime}</li></ul>`
+                subject: `You have a new session with ${traineeWordLower}`,
+                text: `${traineeWord} booked a session with you, starting from ${booking.startTime} and ending at ${booking.endTime}`,
+                html: `<b>${traineeWord} booked a session with you</b><ul><li>starting: ${booking.startTime}</li><li>ending:${booking.endTime}</li></ul>`
             };
             console.log(`Email data: ${JSON.stringify(emailData)}`);
             try {

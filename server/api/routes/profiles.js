@@ -7,8 +7,8 @@ const Profile = require('../models/profile')
 
 const checkAuth = require('../middleware/check-auth');
 
-router.put('/', checkAuth, (req, res) => {
-    Profile.find({user: req.userData.id}, function(err, docs) {
+router.put('/', checkAuth, async (req, res) => {
+    await Profile.find({user: req.userData.id}, async function(err, docs) {
         if (err) {
             console.log(err)
             return res.status(500).json({
@@ -18,17 +18,13 @@ router.put('/', checkAuth, (req, res) => {
         }
         // if profile doesn't exist
         if (docs.length == 0) {
-            let profile = new Profile({user: req.userData.id})
-            profile
-            .save( function(err) {
-                return res.status(500).json({
-                    fail: 'error',
-                    error: err,
-                });
-            });
+            let profile = await new Profile({user: req.userData.id});
+            let savedProfile = await profile.save();
         }
+
         Profile.findOne({user: req.userData.id}, function(err, doc) {
             if (err) {
+                console.log('error in find profile after save')
                 return res.status(500).json({
                     fail: 'error',
                     error: err,

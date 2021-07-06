@@ -16,7 +16,10 @@ let transporter = nodemailer.createTransport({
 
 let fromField = '"consultant booking" <consultant-booking@outlook.com>';
 
-async function sendSessionCanceledMail({consultant, trainee, deleteByConsultant}) {
+async function sendSessionCanceledMail({booking, deleteByConsultant}) {
+    const consultant = booking.consultant;
+    const trainee = booking.trainee;
+
     User.findById(consultant, async function(err, consultantUser) {
         if (err) {
             console.log(err);
@@ -58,14 +61,14 @@ async function sendSessionCanceledMail({consultant, trainee, deleteByConsultant}
                         from: fromField,
                         to: traineeUser.email,
                         subject: `Your booking with ${consultantFullName ? `consultant ${consultantFullName}` : 'a consultant'} is cancelled`,
-                        text: `Your booking with ${consultantFullName ? `consultant ${consultantFullName}` : 'a consultant'} is cancelled`,
-                        html: `<b>Your booking with ${consultantFullName ? `consultant ${consultantFullName}` : 'a consultant'} is cancelled</b>`
+                        text: `Your booking with ${consultantFullName ? `consultant ${consultantFullName}` : 'a consultant'} is cancelled, the one starting from ${booking.startTime} and ending at ${booking.endTime}`,
+                        html: `<b>Your booking with ${consultantFullName ? `consultant ${consultantFullName}` : 'a consultant'} is cancelled</b><ul><li>starting: ${booking.startTime}</li><li>ending:${booking.endTime}</li></ul>`
                     } : {
                         from: fromField,
                         to: consultantUser.email,
                         subject: `Your session with ${traineeFullName ? `the trainee ${traineeFullName}` : 'a trainee'} is cancelled`,
-                        text: `Your session with ${traineeFullName ? `the trainee ${traineeFullName}` : 'a trainee'} is cancelled`,
-                        html: `<b>Your session with ${traineeFullName ? `the trainee ${traineeFullName}` : 'a trainee'} is cancelled</b>`,
+                        text: `Your session with ${traineeFullName ? `the trainee ${traineeFullName}` : 'a trainee'} is cancelled, the one starting from ${booking.startTime} and ending at ${booking.endTime}`,
+                        html: `<b>Your session with ${traineeFullName ? `the trainee ${traineeFullName}` : 'a trainee'} is cancelled</b><ul><li>starting: ${booking.startTime}</li><li>ending:${booking.endTime}</li></ul>`,
                     };
                     console.log(`Email data: ${JSON.stringify(emailData)}`);
                     try {

@@ -6,6 +6,9 @@ const databaseString = process.env.PORT ? 'mongodb+srv://newuser:newuser@cluster
 console.log('database string: ' + databaseString);
 mongoose.connect(databaseString);
 
+const reminders = require('./api/email/reminders');
+reminders.start();
+
 const app = express();
 app.use(morgan('dev'));
 app.use(express.json());

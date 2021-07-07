@@ -218,9 +218,9 @@ async function sendReminderMail({booking}) {
             const emailData = {
                 from: fromField,
                 to: traineeEmail,
-                subject: `Your booking with ${consultantWord} is starting tomorrow`,
-                text: `Your booking with ${consultantWord} (${timerangeString})`,
-                html: `<b>Your booking with ${consultantWord} is starting tomorrow</b> (${timerangeString})`
+                subject: `You have a booking with ${consultantWord} tomorrow`,
+                text: `You have a booking with ${consultantWord} tomorrow (${timerangeString})`,
+                html: `<b>You have a booking with ${consultantWord} tomorrow (${timerangeString})</b>`
             };
         
             console.log(`Email data: ${JSON.stringify(emailData)}`);

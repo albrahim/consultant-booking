@@ -7,12 +7,12 @@ const sessionTimeSchema = mongoose.Schema({
         default: ['sun', 'mon', 'tue', 'wed', 'thu']
     },
     acceptableHours: [mongoose.Schema({
-        startHour: Number,
-        startMinute: Number,
-        endHour: Number,
-        endMinute: Number
+        startHour: {type: Number, required: true},
+        startMinute: {type: Number, required: true},
+        endHour: {type: Number, required: true},
+        endMinute: {type: Number, required: true}
     }, {_id: false})],
-    minutesPerSession: Number,
+    minutesPerSession: {type: Number, required: true},
 }, {_id: false});
 
 module.exports = {

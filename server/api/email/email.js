@@ -49,36 +49,32 @@ async function sendSessionCanceledMail({booking, deleteByConsultant}) {
                         return;
                     }
                     
-                    let consultantFullName = null;
-                    let traineeFullName = null;
-                    if (consultantProfile) {
-                        if (consultantProfile.firstName && consultantProfile.lastName) {
-                            consultantFullName = (consultantProfile.firstName + ' ' + consultantProfile.lastName);
-                        }
-                    }
-                    if (traineeProfile) {
-                        if (traineeProfile.firstName && traineeProfile.lastName) {
-                            traineeFullName = (traineeProfile.firstName + ' ' + traineeProfile.lastName);
-                        }
-                    }
+                    let consultantFullName = (consultantProfile.firstName + ' ' + consultantProfile.lastName);;
+                    let traineeFullName = (traineeProfile.firstName + ' ' + traineeProfile.lastName);;
                     console.log('consultant fullname: ' + consultantFullName);
                     console.log('trainee fullname: ' + traineeFullName);
 
                     const timerangeString = `${booking.startTime.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'})} - ${booking.endTime.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'})}, ${booking.startTime.toLocaleDateString('en-uk')}`;
                     
-                    const emailData = deleteByConsultant ? {
-                        from: fromField,
-                        to: traineeUser.email,
-                        subject: `Your booking with ${consultantFullName ? `consultant ${consultantFullName}` : 'a consultant'} is cancelled`,
-                        text: `Your booking with ${consultantFullName ? `consultant ${consultantFullName}` : 'a consultant'} was cancelled (${timerangeString}) by the consultant`,
-                        html: `<b>Your booking with ${consultantFullName ? `consultant ${consultantFullName}` : 'a consultant'} was cancelled (${timerangeString}) by the consultant</b>`
-                    } : {
-                        from: fromField,
-                        to: consultantUser.email,
-                        subject: `Your session with ${traineeFullName ? `the trainee ${traineeFullName}` : 'a trainee'} is cancelled`,
-                        text: `Your session with ${traineeFullName ? `the trainee ${traineeFullName}` : 'a trainee'} was cancelled (${timerangeString}) by the trainee`,
-                        html: `<b>Your session with ${traineeFullName ? `the trainee ${traineeFullName}` : 'a trainee'} was cancelled (${timerangeString}) by the trainee</b>`,
-                    };
+                    let emailData;
+                    if (deleteByConsultant) {
+                        emailData = {
+                            from: fromField,
+                            to: traineeUser.email,
+                            subject: `Your booking with consultant ${consultantFullName} is cancelled`,
+                            text: `Your booking with consultant ${consultantFullName} is cancelled (${timerangeString}) by the consultant`,
+                            html: `<b>Your booking with consultant ${consultantFullName} is cancelled (${timerangeString}) by the consultant</b>`
+                        };
+                    } else {
+                        emailData = {
+                            from: fromField,
+                            to: consultantUser.email,
+                            subject: `Your session with the trainee ${traineeFullName} is cancelled`,
+                            text: `Your session with the trainee ${traineeFullName} is cancelled (${timerangeString}) by the trainee`,
+                            html: `<b>Your session with the trainee ${traineeFullName} is cancelled (${timerangeString}) by the trainee</b>`,
+                        };
+                    }
+                    
                     console.log(`Email data: ${JSON.stringify(emailData)}`);
                     try {
                         let info = await transporter.sendMail(emailData);

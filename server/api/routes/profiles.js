@@ -2,16 +2,18 @@ const express = require('express');
 const router = express.Router();
 
 const User = require('../models/user');
-const Profile = require('../models/profile')
+const Profile = require('../models/profile');
+const Booking = require('../models/booking');
 
 const checkAuth = require('../middleware/check-auth');
+
 
 router.put('/', checkAuth, async (req, res) => {
     if (req.body.sessionTime) { // validate consultant
         if (!req.body.firstName || !req.body.lastName || !req.body.gender || !req.body.major) {
             return res.status(500).json({
                 fail: 'Missing profile fields for consultant'
-            })
+            });
         }
     }
 
@@ -33,7 +35,26 @@ router.put('/', checkAuth, async (req, res) => {
         }
     }
 
-    // change profile
+    Booking.find({
+        consultant: req.userData.id,
+        startTime: {
+            $gte: new Date()
+        }
+    }, async function(err, docs) {
+        if (err) {
+            return res.status(500).json({
+                fail: 'error',
+                error: err,
+            });
+        }
+        console.log(docs);
+        if (docs.length > 0 && !req.body.sessionTime) {
+            return res.status(500).json({
+                fail: 'Need to cancel bookings before removing user from consultants',
+            });
+        }
+
+        // change profile
     await Profile.find({user: req.userData.id}, async function(err, docs) {
         if (err) {
             console.log(err)
@@ -107,6 +128,7 @@ router.get('/', checkAuth, (req, res) => {
                 major: profile.major,
                 sessionTime: profile.sessionTime,
             });
+    });
     });
 })
 

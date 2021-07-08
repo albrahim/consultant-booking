@@ -5,9 +5,10 @@ const Profile = require('../models/profile');
 const Booking = require('../models/booking');
 
 const checkAuth = require('../middleware/check-auth');
+const canBook = require('../middleware/can-book');
 const email = require('../email/email');
 
-router.post('/reserved', checkAuth, (req, res) => {
+router.post('/reserved', checkAuth, canBook, (req, res) => {
     let consultantId = req.body.consultantId;
     let traineeId = req.userData.id;
     let startTimeInput = req.body.startTime; // string or integer

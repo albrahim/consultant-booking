@@ -7,6 +7,14 @@ const Profile = require('../models/profile')
 const checkAuth = require('../middleware/check-auth');
 
 router.put('/', checkAuth, async (req, res) => {
+    if (req.body.sessionTime) {
+        if (!req.body.firstName || !req.body.lastName || !req.body.gender || !req.body.major) {
+            return res.status(500).json({
+                fail: 'Missing profile fields for consultant'
+            })
+        }
+    }
+
     await Profile.find({user: req.userData.id}, async function(err, docs) {
         if (err) {
             console.log(err)

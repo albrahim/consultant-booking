@@ -350,4 +350,26 @@ router.delete('/reserved/:reservationId', checkAuth, (req, res) => {
     });
 });
 
+
+router.get('/consultants', checkAuth, (req, res) => {
+    Profile.find({sessionTime: { $exists: true }}, function(err, docs) {
+        if (err) {
+            return res.status(500).json({
+                fail: 'error',
+                error: err,
+            });
+        }
+        const consultantList = docs.map(e => ({
+            id: e.user,
+            firstName: e.firstName,
+            lastName: e.lastName,
+            major: e.major,
+            gender: e.gender,
+        }));
+        return res.status(200).json({
+            consultants: consultantList,
+        })
+    });
+});
+
 module.exports = router;

@@ -7,7 +7,7 @@ const Profile = require('../models/profile')
 const checkAuth = require('../middleware/check-auth');
 
 router.put('/', checkAuth, async (req, res) => {
-    if (req.body.sessionTime) {
+    if (req.body.sessionTime) { // validate consultant
         if (!req.body.firstName || !req.body.lastName || !req.body.gender || !req.body.major) {
             return res.status(500).json({
                 fail: 'Missing profile fields for consultant'
@@ -15,6 +15,25 @@ router.put('/', checkAuth, async (req, res) => {
         }
     }
 
+    if (req.body.sessionTime) { // validate session time
+        const sessionTime = req.body.sessionTime;
+        if (sessionTime.acceptableHours) { // validate acceptable hours
+            if (sessionTime.acceptableHours.some(e => ![0, 30].includes(e.startMinute) || ![0, 30].includes(e.endMinute))) {
+                return res.status(500).json({
+                    fail: 'Invalid start or end minute'
+                });
+            }
+        }
+        if (sessionTime.minutesPerSession) { // validate minutes per session
+            if (![30, 60].includes(sessionTime.minutesPerSession)) {
+                return res.status(500).json({
+                    fail: 'Invalid minutes per session'
+                });
+            }
+        }
+    }
+
+    // change profile
     await Profile.find({user: req.userData.id}, async function(err, docs) {
         if (err) {
             console.log(err)
@@ -38,25 +57,6 @@ router.put('/', checkAuth, async (req, res) => {
                 });
             }
             const profile = doc;
-            if (req.body.sessionTime) { // validate session time
-                const sessionTime = req.body.sessionTime;
-                if (sessionTime.acceptableHours) { // validate acceptable hours
-                    const acceptableHours = sessionTime.acceptableHours;
-                    if (acceptableHours.some(e => ![0, 30].includes(e.startMinute) || ![0, 30].includes(e.endMinute))) {
-                        return res.status(500).json({
-                            fail: 'Invalid start or end minute'
-                        });
-                    }
-                }
-                if (sessionTime.minutesPerSession) { // validate minutes per session
-                    const minutesPerSession = sessionTime.minutesPerSession;
-                    if (![30, 60].includes(minutesPerSession)) {
-                        return res.status(500).json({
-                            fail: 'Invalid minutes per session'
-                        });
-                    }
-                }
-            }
 
             profile.overwrite({
                 user: profile.user,

@@ -63,6 +63,13 @@
 }
 ```
 
+#### if email format is invalid:
+```
+{
+    "fail": "Invalid email format"
+}
+```
+
 #### if email not providied:
 ```
 {

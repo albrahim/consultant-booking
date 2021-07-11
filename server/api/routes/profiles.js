@@ -36,7 +36,10 @@ router.put('/', checkAuth, async (req, res) => {
     }
 
     Booking.find({
-        consultant: req.userData.id,
+        $or: [
+            { consultant: req.userData.id },
+            { trainee: req.userData.id }
+        ],
         startTime: {
             $gte: new Date()
         }
@@ -50,7 +53,7 @@ router.put('/', checkAuth, async (req, res) => {
         console.log(docs);
         if (docs.length > 0 && !req.body.sessionTime) {
             return res.status(500).json({
-                fail: 'Need to cancel bookings before removing user from consultants',
+                fail: 'Need to cancel bookings before removing profile fields',
             });
         }
 

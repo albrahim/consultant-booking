@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
+
+const login = require('../utilities/login');
 
 router.post('/signup', (req, res) => {
     const email = (req.body.email ? req.body.email.toLowerCase() : "");
@@ -37,10 +38,13 @@ router.post('/signup', (req, res) => {
                     user
                     .save()
                     .then(result => {
+                        const token = login.issueToken(user);
                         res.status(200).json({
                             success: 'User created',
+                            token: token,
                             user: {
                                 email: user.email,
+                                id: user._id,
                                 signupAt: user.signupAt,
                                 lastLoginAt: user.lastLoginAt,
                             }
@@ -76,13 +80,7 @@ router.post('/login', (req, res, next) => {
 
             user.lastLoginAt = new Date();
             user.save().then(result => {
-                const token = jwt.sign({
-                    id: user._id
-                },
-                "a secret key",
-                {
-                    expiresIn: "5h",
-                });
+                const token = login.issueToken(user);
 
                 return res.status(200).json({
                     success: 'Auth successful',

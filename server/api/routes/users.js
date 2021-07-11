@@ -7,58 +7,59 @@ const User = require('../models/user');
 
 const login = require('../utilities/login');
 
-router.post('/signup', (req, res) => {
-    const email = (req.body.email ? req.body.email.toLowerCase() : "");
-    const password = req.body.password;
+router.post('/validate', (req, res) => {
+    return login.validate({email: req.body.email, password: req.body.password}, function(err, result) {
+        if (err) {
+            return res.status(500).json({fail: 'error', error: err});
+        }
+        return res.status(200).json(result);
+    });
+});
 
-    User.find({email: email})
-        .exec()
-        .then(users => {
-            if (users.length >= 1) {
-                return res.status(409).json({
-                    fail: 'Email already in use'
-                });
-            } else {
-                if (password === "") {
-                    return res.status(500).json({
-                        fail: "Password cannot be empty"
-                    });
+router.post('/signup', (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    login.validate({email: email, password: password}, function(err, result) {
+        if (err) {
+            return res.status(500).json({fail: 'error', error: err});
+        }
+        if (result.fail) {
+            return res.status(500).json(result);
+        }
+        if (result.success) {
+            bcrypt.hash(password, 10, (err, hash) => {
+                if (err) {
+                    return res.status(500).json({fail: 'error', error: err});
                 }
-                bcrypt.hash(password, 10, (err, hash) => {
-                    if (err) {
-                        return res.status(500).json({fail: 'error', error: err});
-                    }
-                    const user = new User({
-                        _id: new mongoose.Types.ObjectId(),
-                        email: email,
-                        hash: hash,
-                        signupAt: new Date(),
-                        lastLoginAt: new Date()
-                    });
-                    user
-                    .save()
-                    .then(result => {
-                        const token = login.issueToken(user);
-                        res.status(200).json({
-                            success: 'User created',
-                            token: token,
-                            user: {
-                                email: user.email,
-                                id: user._id,
-                                signupAt: user.signupAt,
-                                lastLoginAt: user.lastLoginAt,
-                            }
-                        });
-                    })
-                    .catch(err => {
-                        res.status(500).json({fail: 'error', error: err});
-                    });
+                const user = new User({
+                    _id: new mongoose.Types.ObjectId(),
+                    email: email,
+                    hash: hash,
+                    signupAt: new Date(),
+                    lastLoginAt: new Date()
                 });
-            }
-        })
-        .catch(err => {
-            return res.json({fail: 'error', error: err});
-        });
+                user
+                .save()
+                .then(result => {
+                    const token = login.issueToken(user);
+
+                    return res.status(200).json({
+                        success: 'User created',
+                        token: token,
+                        user: {
+                            email: user.email,
+                            id: user._id,
+                            signupAt: user.signupAt,
+                            lastLoginAt: user.lastLoginAt,
+                        }
+                    });
+                })
+                .catch(err => {
+                    res.status(500).json({fail: 'error', error: err});
+                });
+            });
+        }
+    });
 });
 
 router.post('/login', (req, res, next) => {

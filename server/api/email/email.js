@@ -165,9 +165,9 @@ async function sendReminderMail({booking}) {
             const emailData = {
                 from: fromField,
                 to: traineeEmail,
-                subject: `You have a session with ${traineeWord} tomorrow`,
-                text: `You have a session with ${traineeWord} (${timerangeString})`,
-                html: `<b>You have a session with ${traineeWord} tomorrow (${timerangeString})</b>`
+                subject: `Reminder: You have a session with ${traineeWord}`,
+                text: `You have a session with ${traineeWord} in 15 minutes (${timerangeString})`,
+                html: `<b>You have a session with ${traineeWord} in 15 minutes (${timerangeString})</b>`
             };
         
             console.log(`Email data: ${JSON.stringify(emailData)}`);
@@ -214,9 +214,9 @@ async function sendReminderMail({booking}) {
             const emailData = {
                 from: fromField,
                 to: traineeEmail,
-                subject: `You have a booking with ${consultantWord} tomorrow`,
-                text: `You have a booking with ${consultantWord} tomorrow (${timerangeString})`,
-                html: `<b>You have a booking with ${consultantWord} tomorrow (${timerangeString})</b>`
+                subject: `Reminder: You have a booking with ${consultantWord}`,
+                text: `You have a booking with ${consultantWord} in 15 minutes (${timerangeString})`,
+                html: `<b>You have a booking with ${consultantWord} in 15 minutes (${timerangeString})</b>`
             };
         
             console.log(`Email data: ${JSON.stringify(emailData)}`);

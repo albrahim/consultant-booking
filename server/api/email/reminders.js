@@ -10,7 +10,7 @@ function runTask() {
     const date = new Date();
     date.setSeconds(0, 0);
     const bookingDate = new Date(date);
-    bookingDate.setDate(bookingDate.getDate() + 1);
+    bookingDate.setMinutes(bookingDate.getMinutes() + 15);
     
     console.log('Current time: ' + JSON.stringify(date));
     Booking.find({

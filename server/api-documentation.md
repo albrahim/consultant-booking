@@ -26,7 +26,7 @@
 #### if email already exists:
 ```
 {
-    "fail": "Email already exists"
+    "fail": "Email already in use"
 }
 ```
 
@@ -36,6 +36,47 @@
     "fail": "Password cannot be empty"
 }
 ```
+
+## Validate signup info:
+* endpoint: ```/user/validate```
+* method: POST
+### request:
+```
+{
+    "email": <email>,
+    "password": <password>
+}
+```
+
+### response:
+#### if info can be used to signup:
+```
+{
+    "success": "Valid email and password"
+}
+```
+
+#### if email already exists:
+```
+{
+    "fail": "Email already in use"
+}
+```
+
+#### if email not providied:
+```
+{
+    "fail": "Email cannot be empty"
+}
+```
+
+#### if password not provided:
+```
+{
+    "fail": "Password cannot be empty"
+}
+```
+
 
 ## User login:
 * endpoint: ```/user/login```

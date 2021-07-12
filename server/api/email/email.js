@@ -159,12 +159,12 @@ async function sendReminderMail({booking}) {
                 console.log(err);
                 return;
             }
-            const traineeEmail = doc.email;
+            const consultantEmail = doc.email;
             const timerangeString = `${booking.startTime.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'})} - ${booking.endTime.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'})}`;
 
             const emailData = {
                 from: fromField,
-                to: traineeEmail,
+                to: consultantEmail,
                 subject: `Reminder: You have a session with ${traineeWord}`,
                 text: `You have a session with ${traineeWord} in 15 minutes (${timerangeString})`,
                 html: `<b>You have a session with ${traineeWord} in 15 minutes (${timerangeString})</b>`

@@ -37,56 +37,45 @@ async function sendSessionCanceledMail({booking, deleteByConsultant}) {
                 console.log(err);
                 return;
             }
-            Profile.findOne({user: consultant}, async function(err, consultantProfile) {
-                if (err) {
-                    console.log(err);
-                    return;
-                }
-                
-                Profile.findOne({user: trainee}, async function(err, traineeProfile) {
-                    if (err) {
-                        console.log(err);
-                        return;
-                    }
-                    
-                    let consultantFullName = (consultantProfile.firstName + ' ' + consultantProfile.lastName);;
-                    let traineeFullName = (traineeProfile.firstName + ' ' + traineeProfile.lastName);;
-                    console.log('consultant fullname: ' + consultantFullName);
-                    console.log('trainee fullname: ' + traineeFullName);
+            const consultantProfile = consultantUser.profile;
+            const traineeProfile = traineeUser.profile;
+            
+            let consultantFullName = (consultantProfile.firstName + ' ' + consultantProfile.lastName);;
+            let traineeFullName = (traineeProfile.firstName + ' ' + traineeProfile.lastName);;
+            console.log('consultant fullname: ' + consultantFullName);
+            console.log('trainee fullname: ' + traineeFullName);
 
-                    const timerangeString = `${booking.startTime.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'})} - ${booking.endTime.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'})}, ${booking.startTime.toLocaleDateString('en-uk')}`;
-                    
-                    let emailData;
-                    if (deleteByConsultant) {
-                        emailData = {
-                            from: fromField,
-                            to: traineeUser.email,
-                            subject: `Your booking with consultant ${consultantFullName} is cancelled`,
-                            text: `Your booking with consultant ${consultantFullName} is cancelled (${timerangeString}) by the consultant`,
-                            html: `<b>Your booking with consultant ${consultantFullName} is cancelled (${timerangeString}) by the consultant</b>`
-                        };
-                    } else {
-                        emailData = {
-                            from: fromField,
-                            to: consultantUser.email,
-                            subject: `Your session with the trainee ${traineeFullName} is cancelled`,
-                            text: `Your session with the trainee ${traineeFullName} is cancelled (${timerangeString}) by the trainee`,
-                            html: `<b>Your session with the trainee ${traineeFullName} is cancelled (${timerangeString}) by the trainee</b>`,
-                        };
-                    }
-                    
-                    console.log(`Email data: ${JSON.stringify(emailData)}`);
-                    try {
-                        let info = await transporter.sendMail(emailData);
-                        console.log(`Message sent: ${info.messageId}`);
-                        console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
-                    } catch (e) {
-                        console.log(`Message Not sent!`);
-                        console.log(e);
-                        return;
-                    }
-                });
-            });
+            const timerangeString = `${booking.startTime.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'})} - ${booking.endTime.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'})}, ${booking.startTime.toLocaleDateString('en-uk')}`;
+            
+            let emailData;
+            if (deleteByConsultant) {
+                emailData = {
+                    from: fromField,
+                    to: traineeUser.email,
+                    subject: `Your booking with consultant ${consultantFullName} is cancelled`,
+                    text: `Your booking with consultant ${consultantFullName} is cancelled (${timerangeString}) by the consultant`,
+                    html: `<b>Your booking with consultant ${consultantFullName} is cancelled (${timerangeString}) by the consultant</b>`
+                };
+            } else {
+                emailData = {
+                    from: fromField,
+                    to: consultantUser.email,
+                    subject: `Your session with the trainee ${traineeFullName} is cancelled`,
+                    text: `Your session with the trainee ${traineeFullName} is cancelled (${timerangeString}) by the trainee`,
+                    html: `<b>Your session with the trainee ${traineeFullName} is cancelled (${timerangeString}) by the trainee</b>`,
+                };
+            }
+            
+            console.log(`Email data: ${JSON.stringify(emailData)}`);
+            try {
+                let info = await transporter.sendMail(emailData);
+                console.log(`Message sent: ${info.messageId}`);
+                console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
+            } catch (e) {
+                console.log(`Message Not sent!`);
+                console.log(e);
+                return;
+            }
         });
     });
 }
@@ -94,16 +83,18 @@ async function sendSessionCanceledMail({booking, deleteByConsultant}) {
 async function sendConsultantBookedMail({booking}) {
     const consultantId = booking.consultant;
     const traineeId = booking.trainee;
-    User.findById(consultantId, async function(err, consultantDoc) {
+    User.findById(consultantId, async function(err, consultantUser) {
         if (err) {
             console.log(err);
             return;
         }
-        Profile.findOne({user: traineeId}, async function(err, traineeProfile) {
+        User.findById(traineeId, async function(err, traineeUser) {
             if (err) {
                 console.log(err);
                 return;
             }
+            const traineeProfile = traineeUser.profile;
+
             let fullName = null;
             if (traineeProfile) {
                 if (traineeProfile.firstName && traineeProfile.lastName) {
@@ -118,7 +109,7 @@ async function sendConsultantBookedMail({booking}) {
 
             const emailData = {
                 from: fromField,
-                to: consultantDoc.email,
+                to: consultantUser.email,
                 subject: `You have a new session with ${traineeWordLower}`,
                 text: `${traineeWord} booked a session with you (${timerangeString})`,
                 html: `<b>${traineeWord} booked a session with you (${timerangeString})</b>`
@@ -142,24 +133,26 @@ async function sendReminderMail({booking}) {
     console.log(`Will send reminder mail to consultant ${booking.consultant} and trainee ${booking.trainee}`);
 
     // find trainee's name and notify the consultant
-    Profile.findOne({ user: booking.trainee }, async function(err, doc) {
+    User.findById(booking.trainee, async function(err, traineeUser) {
         if (err) {
             console.log(err);
             return;
         }
+        const traineeProfile = traineeUser.profile;
+
         let fullName = null;
-        if (doc && doc.firstName && doc.lastName) {
-            fullName = (doc.firstName + ' ' + doc.lastName);
+        if (traineeProfile && traineeProfile.firstName && traineeProfile.lastName) {
+            fullName = (traineeProfile.firstName + ' ' + traineeProfile.lastName);
         }
         const traineeWord = (fullName ? `trainee ${fullName}` : 'a trainee')
 
         // find consultant's email
-        User.findById(booking.consultant, async function(err, doc) {
+        User.findById(booking.consultant, async function(err, consultantUser) {
             if (err) {
                 console.log(err);
                 return;
             }
-            const consultantEmail = doc.email;
+            const consultantEmail = consultantUser.email;
             const timerangeString = `${booking.startTime.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'})} - ${booking.endTime.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'})}`;
 
             const emailData = {
@@ -191,24 +184,25 @@ async function sendReminderMail({booking}) {
     */
 
     // find consultant's name and notify the trainee
-    Profile.findOne({ user: booking.consultant }, async function(err, doc) {
+    User.findById(booking.consultant, async function(err, consultantUser) {
         if (err) {
             console.log(err);
             return;
         }
+        const consultantProfile = consultantUser.profile;
         let fullName = null;
-        if (doc && doc.firstName && doc.lastName) {
-            fullName = (doc.firstName + ' ' + doc.lastName);
+        if (consultantProfile && consultantProfile.firstName && consultantProfile.lastName) {
+            fullName = (consultantProfile.firstName + ' ' + consultantProfile.lastName);
         }
         const consultantWord = (fullName ? `consultant ${fullName}` : 'a consultant')
 
         // find trainee's email
-        User.findById(booking.trainee, async function(err, doc) {
+        User.findById(booking.trainee, async function(err, traineeUser) {
             if (err) {
                 console.log(err);
                 return;
             }
-            const traineeEmail = doc.email;
+            const traineeEmail = traineeUser.email;
             const timerangeString = `${booking.startTime.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'})} - ${booking.endTime.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'})}`;
 
             const emailData = {

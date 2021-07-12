@@ -1,6 +1,5 @@
 const nodemailer = require('nodemailer');
 const User = require('../models/user');
-const Profile = require('../models/profile');
 
 const debug = true;
 const hostField = debug ? "smtp.ethereal.email" : "smtp.live.com";

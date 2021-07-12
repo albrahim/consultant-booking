@@ -8,9 +8,12 @@ const User = require('../models/user');
 const login = require('../utilities/login');
 
 router.post('/validate', (req, res) => {
-    return login.validate({email: req.body.email, password: req.body.password}, function(err, result) {
+    login.validate({email: req.body.email, password: req.body.password}, function(err, result) {
         if (err) {
             return res.status(500).json({fail: 'error', error: err});
+        }
+        if (result.fail) {
+            return res.status(500).json(result);
         }
         return res.status(200).json(result);
     });

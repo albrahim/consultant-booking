@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const User = require('../models/user');
-const Profile = require('../models/profile');
 const Booking = require('../models/booking');
 
 const checkAuth = require('../middleware/check-auth');
@@ -123,7 +122,7 @@ router.get('/:userid', checkAuth, (req, res) => {
             });
         }
         const profile = user ? user.profile : null;
-        
+
         if (profile == null) {
             return res.status(404).json({
                 fail: "User doesn't exist"

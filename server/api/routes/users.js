@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const User = require('../models/user');
+const Profile = require('../models/profile');
 
 const login = require('../utilities/login');
 
@@ -44,6 +45,12 @@ router.post('/signup', (req, res) => {
                 user
                 .save()
                 .then(result => {
+                    async function createProfile() {
+                        let profile = await new Profile({user: result._id});
+                        let savedProfile = await profile.save();
+                    }
+                    createProfile();
+
                     const token = login.issueToken(user);
 
                     return res.status(200).json({

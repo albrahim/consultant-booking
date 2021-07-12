@@ -35,6 +35,13 @@ router.put('/', checkAuth, async (req, res) => {
         }
     }
 
+    if (req.body.gender && !['male', 'female'].includes(req.body.gender)) {
+        return res.status(500).json({
+            fail: 'Wrong gender value provided'
+        });
+    }
+
+    // if user has upcoming sessions
     Booking.find({
         $or: [
             { consultant: req.userData.id },
@@ -58,29 +65,13 @@ router.put('/', checkAuth, async (req, res) => {
         }
 
         // change profile
-    await Profile.find({user: req.userData.id}, async function(err, docs) {
-        if (err) {
-            console.log(err)
-            return res.status(500).json({
-                fail: 'error',
-                error: err,
-            });
-        }
-        // if profile doesn't exist
-        if (docs.length == 0) {
-            let profile = await new Profile({user: req.userData.id});
-            let savedProfile = await profile.save();
-        }
-
-        Profile.findOne({user: req.userData.id}, function(err, doc) {
+        Profile.findOne({user: req.userData.id}, function(err, profile) {
             if (err) {
-                console.log('error in find profile after save')
                 return res.status(500).json({
                     fail: 'error',
                     error: err,
                 });
             }
-            const profile = doc;
 
             profile.overwrite({
                 user: profile.user,
@@ -92,11 +83,6 @@ router.put('/', checkAuth, async (req, res) => {
             })
             .save( function(err) {
                 if (err) {
-                    if (err.errors && err.errors.gender) {
-                        return res.status(500).json({
-                            fail: 'Wrong gender value provided'
-                        });
-                    }
                     return res.status(500).json({
                         fail: 'error',
                         error: err,
@@ -109,34 +95,27 @@ router.put('/', checkAuth, async (req, res) => {
             });
         });
     });
-})
+});
 
 router.get('/', checkAuth, (req, res) => {
-    Profile.find({user: req.userData.id}, function(err, docs) {
+    console.log('running profile get')
+    Profile.findOne({user: req.userData.id}, function(err, doc) {
         if (err) {
-            return res.status(500).json({
-                fail: 'error',
-                error: err,
-            });
+            return res.status(500).json({fail: 'error', error: err});
         }
-        if (docs.length == 0) {
-            return res.status(200).json({});
-        }
-
-        const profile = docs[0];
-            return res.status(200).json({
-                firstName: profile.firstName,
-                lastName: profile.lastName,
-                gender: profile.gender,
-                major: profile.major,
-                sessionTime: profile.sessionTime,
-            });
+        return res.status(200).json({
+            firstName: doc.firstName,
+            lastName: doc.lastName,
+            gender: doc.gender,
+            major: doc.major,
+            sessionTime: doc.sessionTime,
+        });
     });
-    });
-})
+});
 
 router.get('/:userid', checkAuth, (req, res) => {
-    User.findById(req.params.userid, function(err, result) {
+    Profile.findOne({user: req.params.userid}, function(err, result) {
+        console.log('result ' + result);
         if (err) {
             console.log(err);
             return res.status(500).json({
@@ -149,18 +128,6 @@ router.get('/:userid', checkAuth, (req, res) => {
                 fail: "User doesn't exist"
             });
         }
-        Profile.findOne({user: req.params.userid}, function(err, result) {
-        console.log('result ' + result);
-        if (err) {
-            console.log(err);
-            return res.status(500).json({
-                fail: 'error',
-                error: err,
-            });
-        }
-        if (result == null) {
-            return res.status(200).json({success: 'success'});
-        }
         res.status(200).json({
             firstName: result.firstName,
             lastName: result.lastName,
@@ -169,8 +136,5 @@ router.get('/:userid', checkAuth, (req, res) => {
             sessionTime: result.sessionTime,
         });
     });
-    });
-    
 });
-
 module.exports = router;

@@ -65,13 +65,12 @@ router.put('/', checkAuth, async (req, res) => {
         }
 
         // change profile
-        Profile.findOne({user: req.userData.id}, function(err, profile) {
+        User.findById(req.userData.id, function(err, doc) {
             if (err) {
-                return res.status(500).json({
-                    fail: 'error',
-                    error: err,
-                });
+                return res.status(500).json({fail: 'error', error: err});
             }
+            const profile = doc.profile;
+            console.log(profile);
 
             profile.overwrite({
                 user: profile.user,
@@ -99,16 +98,17 @@ router.put('/', checkAuth, async (req, res) => {
 
 router.get('/', checkAuth, (req, res) => {
     console.log('running profile get')
-    Profile.findOne({user: req.userData.id}, function(err, doc) {
+    User.findById(req.userData.id, function(err, doc) {
         if (err) {
             return res.status(500).json({fail: 'error', error: err});
         }
+        const profile = doc.profile;
         return res.status(200).json({
-            firstName: doc.firstName,
-            lastName: doc.lastName,
-            gender: doc.gender,
-            major: doc.major,
-            sessionTime: doc.sessionTime,
+            firstName: profile.firstName,
+            lastName: profile.lastName,
+            gender: profile.gender,
+            major: profile.major,
+            sessionTime: profile.sessionTime,
         });
     });
 });

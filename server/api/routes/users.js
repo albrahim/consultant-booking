@@ -11,6 +11,7 @@ const login = require('../utilities/login');
 router.post('/validate', (req, res) => {
     login.validate({email: req.body.email, password: req.body.password}, function(err, result) {
         if (err) {
+            console.log(err);
             return res.status(500).json({fail: 'error', error: err});
         }
         if (result.fail) {
@@ -25,32 +26,31 @@ router.post('/signup', (req, res) => {
     const password = req.body.password;
     login.validate({email: email, password: password}, function(err, result) {
         if (err) {
+            console.log(err);
             return res.status(500).json({fail: 'error', error: err});
         }
         if (result.fail) {
             return res.status(500).json(result);
         }
         if (result.success) {
-            bcrypt.hash(password, 10, (err, hash) => {
+            bcrypt.hash(password, 10, async (err, hash) => {
                 if (err) {
+                    console.log(err);
                     return res.status(500).json({fail: 'error', error: err});
                 }
+                const profile = await new Profile();
+                await profile.save();
                 const user = new User({
                     _id: new mongoose.Types.ObjectId(),
                     email: email,
                     hash: hash,
                     signupAt: new Date(),
-                    lastLoginAt: new Date()
+                    lastLoginAt: new Date(),
+                    profile: profile._id,
                 });
                 user
                 .save()
                 .then(result => {
-                    async function createProfile() {
-                        let profile = await new Profile({user: result._id});
-                        let savedProfile = await profile.save();
-                    }
-                    createProfile();
-
                     const token = login.issueToken(user);
 
                     return res.status(200).json({
@@ -65,6 +65,7 @@ router.post('/signup', (req, res) => {
                     });
                 })
                 .catch(err => {
+                    console.log(err);
                     res.status(500).json({fail: 'error', error: err});
                 });
             });

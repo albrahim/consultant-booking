@@ -1,17 +1,18 @@
-const Profile = require('../models/profile');
+const User = require('../models/user');
 
 module.exports = (req, res, next) => {
     if (!req.userData) {
         throw new Error('check-auth needed for using can-book middleware');
     }
-    Profile.findOne({user: req.userData.id}, function(err, doc) {
+    User.findById(req.userData.id, function(err, user) {
         if (err) {
             return res.status(500).json({
                 fail: 'error',
                 error: err,
             })
         }
-        if (doc == null || !doc.firstName || !doc.lastName || !doc.gender || !doc.major) {
+        const profile = user.profile;
+        if (profile == null || !profile.firstName || !profile.lastName || !profile.gender || !profile.major) {
             return res.status(500).json({
                 fail: "Trainee can not book without complete profile"
             });

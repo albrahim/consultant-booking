@@ -38,10 +38,11 @@ router.post('/signup', (req, res) => {
                     console.log(err);
                     return res.status(500).json({fail: 'error', error: err});
                 }
-                const profile = await new Profile();
+                const userId = new mongoose.Types.ObjectId();
+                const profile = await new Profile({user: userId});
                 await profile.save();
                 const user = new User({
-                    _id: new mongoose.Types.ObjectId(),
+                    _id: userId,
                     email: email,
                     hash: hash,
                     signupAt: new Date(),

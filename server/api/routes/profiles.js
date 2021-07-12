@@ -114,8 +114,7 @@ router.get('/', checkAuth, (req, res) => {
 });
 
 router.get('/:userid', checkAuth, (req, res) => {
-    Profile.findOne({user: req.params.userid}, function(err, result) {
-        console.log('result ' + result);
+    User.findById(req.params.userid, function(err, user) {
         if (err) {
             console.log(err);
             return res.status(500).json({
@@ -123,17 +122,19 @@ router.get('/:userid', checkAuth, (req, res) => {
                 error: err,
             });
         }
-        if (result == null) {
+        const profile = user ? user.profile : null;
+        
+        if (profile == null) {
             return res.status(404).json({
                 fail: "User doesn't exist"
             });
         }
         res.status(200).json({
-            firstName: result.firstName,
-            lastName: result.lastName,
-            gender: result.gender,
-            major: result.major,
-            sessionTime: result.sessionTime,
+            firstName: profile.firstName,
+            lastName: profile.lastName,
+            gender: profile.gender,
+            major: profile.major,
+            sessionTime: profile.sessionTime,
         });
     });
 });

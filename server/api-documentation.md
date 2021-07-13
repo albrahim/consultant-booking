@@ -6,6 +6,16 @@
 {
     "email": <email>,
     "password": <password>
+    "profile": <profile object optional>
+}
+```
+#### profile object:
+```
+{
+    firstName: <string optional>
+    lastName: <string optional>
+    gender: <string optional>
+    major: <string optional>
 }
 ```
 
@@ -36,6 +46,29 @@
     "fail": "Password cannot be empty"
 }
 ```
+
+#### if first name or last name is empty string:
+```
+{
+    "fail": "Wrong name value provided"
+}
+```
+
+#### if wrong gender value provided:
+```
+{{
+    "fail": "Wrong gender value provided"
+}
+```
+
+#### if major is empty string:
+```
+{
+    "fail": "Wrong major value provided"
+}
+```
+
+
 
 ## Validate signup info:
 * endpoint: ```/user/validate```

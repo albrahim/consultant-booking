@@ -8,11 +8,18 @@ const profileSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    firstName: String,
-    lastName: String,
+    firstName: {
+        type: String,
+        required: true,
+    },
+    lastName: {
+        type: String,
+        required: true,
+    },
     gender: {
         type: String,
         enum: ['male', 'female'],
+        required: true,
     },
     major: String,
     sessionTime: sessionTimeSchema,

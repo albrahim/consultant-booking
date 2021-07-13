@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const Profile = require('../models/profile');
 const Booking = require('../models/booking');
-
+const Profile = require('../models/profile');
+const User = require('../models/user');
 const checkAuth = require('../middleware/check-auth');
 const canBook = require('../middleware/can-book');
 const email = require('../email/email');
@@ -68,19 +68,19 @@ router.post('/reserved', checkAuth, canBook, (req, res) => {
         });
     }
     // check if profile exists
-    Profile.find({user: consultantId}, function(err, docs) {
+    User.findById(consultantId, function(err, user) {
         if (err) {
             return res.status(500).json({
                 fail: 'error',
                 error: err,
             });
         }
-        if (docs.length < 1) {
+        if (user == null) {
             return res.status(500).json({
                 fail: 'Invalid user id'
             });
         }
-        const profile = docs[0]
+        const profile = user.profile;
         if (!profile.sessionTime) {
             return res.status(500).json({
                 fail: 'This user is not a consultant'
@@ -219,17 +219,19 @@ router.get('/reserved', checkAuth, (req, res) => {
 });
 
 router.get('/available-timeslots/:consultantId', checkAuth, (req, res) => {
-    Profile.findOne({user: req.params.consultantId}, function(err, doc) {
+    User.findById(req.params.consultantId, function(err, user) {
         if (err) {
             return res.status(500).json({ fail: 'error', error: err });
         }
-        if (doc == null || !doc.sessionTime) {
+        const profile = user ? user.profile : null;
+
+        if (profile == null || !profile.sessionTime) {
             return res.status(500).json({ fail: 'Invalid consultant id' }); 
         }
 
-        const acceptableHours = doc.sessionTime.acceptableHours;
-        const acceptableDays = doc.sessionTime.acceptableDays;
-        const minutesPerSession = doc.sessionTime.minutesPerSession ? doc.sessionTime.minutesPerSession : 30;
+        const acceptableHours = profile.sessionTime.acceptableHours;
+        const acceptableDays = profile.sessionTime.acceptableDays;
+        const minutesPerSession = profile.sessionTime.minutesPerSession ? profile.sessionTime.minutesPerSession : 30;
         Booking.find({
             consultant: req.params.consultantId,
         }, function(err, docs) {
@@ -353,14 +355,14 @@ router.delete('/reserved/:reservationId', checkAuth, (req, res) => {
 
 
 router.get('/consultants', checkAuth, (req, res) => {
-    Profile.find({sessionTime: { $exists: true }}, function(err, docs) {
+    Profile.find({sessionTime: { $exists: true }}, function(err, profiles) {
         if (err) {
             return res.status(500).json({
                 fail: 'error',
                 error: err,
             });
         }
-        const consultantList = docs.map(e => ({
+        const consultantList = profiles.map(e => ({
             id: e.user,
             firstName: e.firstName,
             lastName: e.lastName,

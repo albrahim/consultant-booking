@@ -14,7 +14,15 @@ const userSchema = mongoose.Schema({
     },
     signupAt: Date,
     lastLoginAt: Date,
+    profile: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile',
+        required: false,
+        autopopulate: true,
+    }
 });
+
+userSchema.plugin(require('mongoose-autopopulate'));
 
 userSchema.pre('remove', function(next) {
     console.log('will remove user');

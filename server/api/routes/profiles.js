@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const User = require('../models/user');
-const Profile = require('../models/profile');
 const Booking = require('../models/booking');
 
 const checkAuth = require('../middleware/check-auth');
@@ -65,13 +64,12 @@ router.put('/', checkAuth, async (req, res) => {
         }
 
         // change profile
-        Profile.findOne({user: req.userData.id}, function(err, profile) {
+        User.findById(req.userData.id, function(err, doc) {
             if (err) {
-                return res.status(500).json({
-                    fail: 'error',
-                    error: err,
-                });
+                return res.status(500).json({fail: 'error', error: err});
             }
+            const profile = doc.profile;
+            console.log(profile);
 
             profile.overwrite({
                 user: profile.user,
@@ -99,23 +97,23 @@ router.put('/', checkAuth, async (req, res) => {
 
 router.get('/', checkAuth, (req, res) => {
     console.log('running profile get')
-    Profile.findOne({user: req.userData.id}, function(err, doc) {
+    User.findById(req.userData.id, function(err, doc) {
         if (err) {
             return res.status(500).json({fail: 'error', error: err});
         }
+        const profile = doc.profile;
         return res.status(200).json({
-            firstName: doc.firstName,
-            lastName: doc.lastName,
-            gender: doc.gender,
-            major: doc.major,
-            sessionTime: doc.sessionTime,
+            firstName: profile.firstName,
+            lastName: profile.lastName,
+            gender: profile.gender,
+            major: profile.major,
+            sessionTime: profile.sessionTime,
         });
     });
 });
 
 router.get('/:userid', checkAuth, (req, res) => {
-    Profile.findOne({user: req.params.userid}, function(err, result) {
-        console.log('result ' + result);
+    User.findById(req.params.userid, function(err, user) {
         if (err) {
             console.log(err);
             return res.status(500).json({
@@ -123,17 +121,19 @@ router.get('/:userid', checkAuth, (req, res) => {
                 error: err,
             });
         }
-        if (result == null) {
+        const profile = user ? user.profile : null;
+
+        if (profile == null) {
             return res.status(404).json({
                 fail: "User doesn't exist"
             });
         }
         res.status(200).json({
-            firstName: result.firstName,
-            lastName: result.lastName,
-            gender: result.gender,
-            major: result.major,
-            sessionTime: result.sessionTime,
+            firstName: profile.firstName,
+            lastName: profile.lastName,
+            gender: profile.gender,
+            major: profile.major,
+            sessionTime: profile.sessionTime,
         });
     });
 });

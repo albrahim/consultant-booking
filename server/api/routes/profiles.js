@@ -8,6 +8,27 @@ const checkAuth = require('../middleware/check-auth');
 
 
 router.put('/', checkAuth, async (req, res) => {
+    if (!req.body.firstName || !req.body.lastName) {
+        return res.status(500).json({
+            fail: 'Name not provided'
+        });
+    }
+    if (!req.body.gender) {
+        return res.status(500).json({
+            fail: 'Gender not provided'
+        });
+    }
+    if (!['male', 'female'].includes(req.body.gender)) {
+        return res.status(500).json({
+            fail: 'Wrong gender value provided'
+        });
+    }
+    if (req.body.major == "") {
+        return res.status(500).json({
+            fail: 'Wrong major value provided'
+        });
+    }
+
     if (req.body.sessionTime) { // validate consultant
         if (!req.body.firstName || !req.body.lastName || !req.body.gender || !req.body.major) {
             return res.status(500).json({
@@ -32,12 +53,6 @@ router.put('/', checkAuth, async (req, res) => {
                 });
             }
         }
-    }
-
-    if (req.body.gender && !['male', 'female'].includes(req.body.gender)) {
-        return res.status(500).json({
-            fail: 'Wrong gender value provided'
-        });
     }
 
     // if user has upcoming sessions

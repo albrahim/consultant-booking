@@ -47,6 +47,13 @@
 }
 ```
 
+#### if profile field is not an object:
+```
+{
+    "fail": "Invalid profile object"
+}
+```
+
 #### if first name or last name is empty string:
 ```
 {
@@ -67,8 +74,6 @@
     "fail": "Wrong major value provided"
 }
 ```
-
-
 
 ## Validate signup info:
 * endpoint: ```/user/validate```

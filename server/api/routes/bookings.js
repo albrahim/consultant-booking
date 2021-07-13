@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const Booking = require('../models/booking');
-
+const Profile = require('../models/profile');
 const checkAuth = require('../middleware/check-auth');
 const canBook = require('../middleware/can-book');
 const email = require('../email/email');

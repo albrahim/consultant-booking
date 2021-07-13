@@ -24,6 +24,8 @@ router.post('/validate', (req, res) => {
 router.post('/signup', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
+    const inputProfile = req.body.profile ? req.body.profile : {};
+
     login.validate({email: email, password: password}, function(err, result) {
         if (err) {
             console.log(err);
@@ -33,36 +35,66 @@ router.post('/signup', (req, res) => {
             return res.status(500).json(result);
         }
         if (result.success) {
+            if ((typeof inputProfile) != 'object') {
+                return res.status(500).json({fail: 'Invalid profile object'});
+            }
+            if (inputProfile.gender && !['male', 'female'].includes(inputProfile.gender)) {
+                return res.status(500).json({
+                    fail: 'Wrong gender value provided'
+                });
+            }
+            if (inputProfile.firstName == "" || inputProfile.lastName == "") {
+                return res.status(500).json({
+                    fail: 'Wrong name value provided'
+                });
+            }
+            if (inputProfile.major == "") {
+                return res.status(500).json({
+                    fail: 'Wrong major value provided'
+                });
+            }
+
             bcrypt.hash(password, 10, async (err, hash) => {
                 if (err) {
                     console.log(err);
                     return res.status(500).json({fail: 'error', error: err});
                 }
                 const userId = new mongoose.Types.ObjectId();
-                const profile = await new Profile({user: userId});
-                await profile.save();
-                const user = new User({
-                    _id: userId,
-                    email: email,
-                    hash: hash,
-                    signupAt: new Date(),
-                    lastLoginAt: new Date(),
-                    profile: profile._id,
-                });
-                user
+                new Profile({
+                    user: userId,
+                    firstName: inputProfile.firstName,
+                    lastName: inputProfile.lastName,
+                    gender: inputProfile.gender,
+                    major: inputProfile.major,
+                })
                 .save()
-                .then(result => {
-                    const token = login.issueToken(user);
-
-                    return res.status(200).json({
-                        success: 'User created',
-                        token: token,
-                        user: {
-                            email: user.email,
-                            id: user._id,
-                            signupAt: user.signupAt,
-                            lastLoginAt: user.lastLoginAt,
-                        }
+                .then(profile => {
+                    return new User({
+                        _id: userId,
+                        email: email,
+                        hash: hash,
+                        signupAt: new Date(),
+                        lastLoginAt: new Date(),
+                        profile: profile._id,
+                    })
+                    .save()
+                    .then(user => {
+                        const token = login.issueToken(user);
+    
+                        return res.status(200).json({
+                            success: 'User created',
+                            token: token,
+                            user: {
+                                email: user.email,
+                                id: user._id,
+                                signupAt: user.signupAt,
+                                lastLoginAt: user.lastLoginAt,
+                            }
+                        });
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.status(500).json({fail: 'error', error: err});
                     });
                 })
                 .catch(err => {

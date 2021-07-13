@@ -38,14 +38,19 @@ router.post('/signup', (req, res) => {
             if ((typeof inputProfile) != 'object') {
                 return res.status(500).json({fail: 'Invalid profile object'});
             }
-            if (inputProfile.gender && !['male', 'female'].includes(inputProfile.gender)) {
+            if (!inputProfile.firstName || !inputProfile.lastName) {
                 return res.status(500).json({
-                    fail: 'Wrong gender value provided'
+                    fail: 'Name not provided'
                 });
             }
-            if (inputProfile.firstName == "" || inputProfile.lastName == "") {
+            if (!inputProfile.gender) {
                 return res.status(500).json({
-                    fail: 'Wrong name value provided'
+                    fail: 'Gender not provided'
+                });
+            }
+            if (!['male', 'female'].includes(inputProfile.gender)) {
+                return res.status(500).json({
+                    fail: 'Wrong gender value provided'
                 });
             }
             if (inputProfile.major == "") {

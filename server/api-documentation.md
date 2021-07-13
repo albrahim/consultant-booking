@@ -54,16 +54,23 @@
 }
 ```
 
-#### if first name or last name is empty string:
+#### if first name or last name are not provided:
 ```
 {
-    "fail": "Wrong name value provided"
+    "fail": "Name not provided"
 }
 ```
 
-#### if wrong gender value provided:
+#### if gender is not provided:
 ```
-{{
+{
+    "fail": "Gender not provided"
+}
+```
+
+#### if gender value is not "male" or "female":
+```
+{
     "fail": "Wrong gender value provided"
 }
 ```
@@ -212,10 +219,31 @@ minutes per session can be either 30 or 60
 }
 ```
 
-#### if wrong gender value provided:
+#### if first name or last name are not provided:
 ```
-{{
+{
+    "fail": "Name not provided"
+}
+```
+
+#### if gender is not provided:
+```
+{
+    "fail": "Gender not provided"
+}
+```
+
+#### if gender value is not "male" or "female":
+```
+{
     "fail": "Wrong gender value provided"
+}
+```
+
+#### if major is empty string:
+```
+{
+    "fail": "Wrong major value provided"
 }
 ```
 

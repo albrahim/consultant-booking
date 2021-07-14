@@ -1,10 +1,10 @@
 const nodemailer = require('nodemailer');
 const User = require('../models/user');
 
-const debug = true;
-const hostField = debug ? "smtp.ethereal.email" : "smtp.live.com";
-const userField = debug ? 'joelle.lueilwitz@ethereal.email' : 'consultant-booking@outlook.com';
-const passField = debug ? 'AQeQxRERJ1Mt9cCxG3' : 'giprok-binWe6-wiszid';
+const hostField = process.env.MAIL_HOST;
+const userField = process.env.MAIL_USER;
+const passField = process.env.MAIL_PASS;
+const fromField = process.env.MAIL_FROM;
 
 let transporter = nodemailer.createTransport({
     host: hostField,
@@ -18,9 +18,7 @@ let transporter = nodemailer.createTransport({
     }
 });
 
-let fromField = debug ?
-    '"Joelle Lueilwitz" <joelle.lueilwitz@ethereal.email>':
-    '"consultant booking" <consultant-booking@outlook.com>';
+
 
 async function sendSessionCanceledMail({booking, deleteByConsultant}) {
     const consultant = booking.consultant;

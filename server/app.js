@@ -2,9 +2,8 @@ const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 
-const databaseString = process.env.PORT ? 'mongodb+srv://newuser:newuser@cluster0.lrtps.mongodb.net/myFirstDatabase?retryWrites=true&w=majority?authSource=myFirstDatabase&w=1' : 'mongodb://127.0.0.1:27017/booking';
-console.log('database string: ' + databaseString);
-mongoose.connect(databaseString);
+const databaseURL = process.env.DB_URL
+mongoose.connect(databaseURL);
 
 const reminders = require('./api/email/reminders');
 reminders.start();
